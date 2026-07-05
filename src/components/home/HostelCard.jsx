@@ -1,9 +1,11 @@
 
 import { FaWifi, FaStar } from "react-icons/fa";
 import { FiMapPin } from "react-icons/fi";
+import { Link } from "react-router-dom";
 
 const HostelCard = ({hostel}) => {
   return (
+    <Link to={`/hostel/${hostel.id}`}>
     <div className="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition duration-300">
 
       {/* Hostel Image */}
@@ -99,6 +101,8 @@ const HostelCard = ({hostel}) => {
       </div>
 
     </div>
+
+    </Link>
   );
 };
   export default HostelCard;
