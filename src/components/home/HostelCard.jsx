@@ -1,3 +1,4 @@
+
 import { FaWifi, FaStar } from "react-icons/fa";
 import { FiMapPin } from "react-icons/fi";
 
@@ -6,12 +7,13 @@ const HostelCard = ({hostel}) => {
     <div className="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition duration-300">
 
       {/* Hostel Image */}
-
+    <div className="overflow-hidden">
       <img
         src={hostel.image}
         alt="Hostel"
-        className="w-full h-56 object-cover"
+          className="w-full h-56 object-cover hover:scale-110 transition-transform duration-500"
       />
+      </div>
 
       {/* Card Content */}
 
@@ -54,7 +56,7 @@ const HostelCard = ({hostel}) => {
 
     <span
       key={item}
-      className="bg-green-100 text-green-700 px-4 py-2 rounded-full text-sm"
+      className="bg-green-100 text-green-700 px-4 py-2 rounded-full text-sm flex items-center gap-2"
     >
          {item === "WiFi" && <FaWifi />}
       {item}
@@ -99,5 +101,4 @@ const HostelCard = ({hostel}) => {
     </div>
   );
 };
-
-export default HostelCard;
+  export default HostelCard;
