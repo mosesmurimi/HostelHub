@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Dashboard from "./pages/Dashboard";
 
 import Home from "./pages/Home";
 import HostelDetails from "./pages/HostelDetails";
@@ -15,6 +16,7 @@ function App() {
           element={<HostelDetails />}
         />
 
+         <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
     </BrowserRouter>
   );

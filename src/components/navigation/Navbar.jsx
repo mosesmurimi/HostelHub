@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { FaHome } from "react-icons/fa";
 import { FiSearch } from "react-icons/fi";
 
@@ -23,12 +24,14 @@ const Navbar = () => {
           <button className="text-2xl text-gray-700 hover:text-green-500 transition">
             <FiSearch />
           </button>
-
+            
+          <Link to="/dashboard">
           <img
             src="https://i.pravatar.cc/100"
             alt="Profile"
             className="w-11 h-11 rounded-full border-2 border-green-500"
           />
+          </Link>
 
         </div>
 

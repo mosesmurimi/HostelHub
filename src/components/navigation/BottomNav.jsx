@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { FaHome, FaHeart, FaSearch, FaUser } from "react-icons/fa";
 
 const BottomNav = () => {
@@ -17,10 +18,12 @@ const BottomNav = () => {
         <button className="text-gray-500 text-2xl">
           <FaHeart />
         </button>
-
+        
+        <Link to="/dashboard">
         <button className="text-gray-500 text-2xl">
           <FaUser />
         </button>
+        </Link>
 
       </div>
 
