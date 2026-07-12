@@ -1,3 +1,11 @@
+import {
+  FiCheckCircle,
+  FiPhone,
+  FiMessageCircle,
+} from "react-icons/fi";
+import { FiMapPin } from "react-icons/fi";
+import { FiArrowLeft } from "react-icons/fi";
+import { Link } from "react-router-dom";
 import HostelCard from "../components/home/HostelCard";
 import { FaHeart } from "react-icons/fa";
 import { useState } from "react";
@@ -22,12 +30,20 @@ const [selectedImage, setSelectedImage] = useState(
   return (
     <div className="max-w-5xl mx-auto p-8">
 
+      <Link
+  to="/"
+  className="inline-flex items-center gap-2 mb-6 text-green-600 font-semibold hover:underline"
+>
+  <FiArrowLeft />
+  Back to Home
+</Link>
+
   <div className="relative">
 
   <img
   src={selectedImage}
   alt={hostel.name}
-  className="w-full h-96 object-cover rounded-3xl transition-all duration-300"
+  className="w-full h-96 object-cover rounded-3xl transition-all duration-500 hover:scale-[1.02]"
 />
 <div className="grid grid-cols-4 gap-4 mt-5">
 
@@ -38,7 +54,8 @@ const [selectedImage, setSelectedImage] = useState(
       src={image}
       alt="Hostel"
       onClick={() => setSelectedImage(image)}
-      className={`h-28 w-full object-cover rounded-xl cursor-pointer transition border-4
+      className={`h-28 w-full object-cover rounded-xl cursor-pointer border-4
+transition-all duration-300 hover:scale-105
 
       ${
         selectedImage === image
@@ -122,9 +139,9 @@ const [selectedImage, setSelectedImage] = useState(
 
 <button className="flex items-center gap-2 border-2 border-green-600 text-green-600 hover:bg-green-600 hover:text-white transition px-6 py-3 rounded-xl">
 
-<FaHeart />
+<FaHeart className="text-red-500 hover:scale-105"/>
 
-Save Hostel
+Save to Favorites
 
 </button>
 
@@ -217,43 +234,66 @@ Save Hostel
 
 
 
-<div className="bg-white rounded-3xl shadow-lg p-6 mt-12">
+<div className="flex items-center justify-between">
 
-    <h2 className="text-2xl font-bold">
+  <div className="flex items-center">
 
-        Listed By
+    <img
+      src="https://i.pravatar.cc/100"
+      alt="Landlord"
+      className="w-20 h-20 rounded-full border-4 border-green-100"
+    />
 
-    </h2>
+    <div className="ml-5">
 
-    <div className="flex items-center mt-5">
+      <h3 className="text-xl font-bold">
+        Moses Murimi
+      </h3>
 
-        <img
+      <div className="flex items-center gap-2 text-green-600 mt-1">
 
-            src="https://i.pravatar.cc/100"
+        <FiCheckCircle />
 
-            className="w-16 h-16 rounded-full"
+        <span>Verified Landlord</span>
 
-        />
+      </div>
 
-        <div className="ml-5">
+      <p className="text-gray-500 mt-2">
+        Usually responds within 10 minutes
+      </p>
 
-            <h3 className="font-bold text-lg">
-
-                Moses Murimi
-
-            </h3>
-
-            <p className="text-gray-500">
-
-                Hostel Manager
-
-            </p>
-
-        </div>
+      <p className="text-yellow-500 mt-1">
+        ⭐ 4.9 • 28 Listings
+      </p>
 
     </div>
 
+  </div>
+
 </div>
+
+
+<div className="flex gap-4 mt-8">
+
+  <button className="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition">
+
+    <FiPhone />
+
+    Call
+
+  </button>
+
+  <button className="flex-1 border-2 border-green-600 text-green-600 hover:bg-green-600 hover:text-white py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition">
+
+    <FiMessageCircle />
+
+    Message
+
+  </button>
+
+</div>
+
+
 
 <div className="bg-white rounded-3xl shadow-lg p-8 mt-12">
 
@@ -263,7 +303,7 @@ Student Reviews
 
 </h2>
 
-<div className="space-y-8">
+<div className="bg-slate-50 rounded-2xl p-5">
 
 <div>
 
@@ -327,21 +367,35 @@ Location
 
 </h2>
 
-<p className="text-gray-600 mt-4">
+<div className="flex items-center gap-2 mt-4 text-gray-600">
 
-📍 {hostel.location}
+  <FiMapPin className="text-green-600 text-xl" />
 
-</p>
-
-<div className="bg-gray-200 rounded-2xl h-72 mt-6 flex items-center justify-center">
-
-<p className="text-gray-500">
-
-Google Maps Coming Soon
-
-</p>
+  <span>{hostel.location}</span>
 
 </div>
+
+<iframe
+  title="Hostel Location"
+  src="https://www.google.com/maps?q=Kirinyaga+University&output=embed"
+  className="w-full h-80 rounded-2xl mt-6"
+  loading="lazy"
+  allowFullScreen
+  referrerPolicy="no-referrer-when-downgrade"
+></iframe>
+
+</div>
+
+<div className="mt-6 flex justify-end">
+
+  <a
+    href="https://maps.google.com/?q=Kirinyaga+University"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl font-semibold transition"
+  >
+    Open in Google Maps
+  </a>
 
 </div>
 
