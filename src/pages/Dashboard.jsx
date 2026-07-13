@@ -12,7 +12,7 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-slate-100">
 
-      <div className="bg-gradient-to-r from-green-600 to-emerald-500 rounded-3xl text-white p-8 shadow-xl">
+      <div className="bg-linear-to-r from-green-600 to-emerald-500 rounded-3xl text-white p-8 shadow-xl">
 
        <h1 className="text-4xl font-bold">
 

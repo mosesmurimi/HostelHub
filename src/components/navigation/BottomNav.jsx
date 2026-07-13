@@ -7,22 +7,30 @@ const BottomNav = () => {
 
       <div className="flex justify-around py-4">
 
-        <button className="text-green-600 text-2xl">
+        <Link
+         to="/" 
+         className="text-green-600 text-2xl">
           <FaHome />
-        </button>
+        </Link>
 
-        <button className="text-gray-500 text-2xl">
+        <Link 
+         to="/search"
+         className="text-gray-500 text-2xl">
           <FaSearch />
-        </button>
+        </Link>
 
-        <button className="text-gray-500 text-2xl">
-          <FaHeart />
-        </button>
+        <Link
+           to="/saved"
+           className="text-gray-500 hover:text-red-500 transition"
+        >
+           <FaHeart size={24} />
+         </Link>
         
-        <Link to="/dashboard">
-        <button className="text-gray-500 text-2xl">
+        <Link 
+         to="/dashboard"
+         className="text-gray-500 text-2xl">
           <FaUser />
-        </button>
+        
         </Link>
 
       </div>

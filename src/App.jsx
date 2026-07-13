@@ -1,3 +1,4 @@
+import SavedHostels from "./pages/SavedHostels";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
 
@@ -17,6 +18,8 @@ function App() {
         />
 
          <Route path="/dashboard" element={<Dashboard />} />
+
+         <Route path="/saved" element={<SavedHostels />} />
       </Routes>
     </BrowserRouter>
   );
