@@ -1,3 +1,4 @@
+import Profile from "./pages/Profile";
 import MyBookings from "./pages/MyBookings";
 import SavedHostels from "./pages/SavedHostels";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -23,6 +24,8 @@ function App() {
          <Route path="/saved" element={<SavedHostels />} />
 
          <Route path="/bookings" element={<MyBookings />} />
+
+         <Route path="/profile" element={<Profile />} />
       </Routes>
     </BrowserRouter>
   );

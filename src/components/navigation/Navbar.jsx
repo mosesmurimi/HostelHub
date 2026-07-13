@@ -25,7 +25,7 @@ const Navbar = () => {
             <FiSearch />
           </button>
             
-          <Link to="/dashboard">
+          <Link  to="/profile">
           <img
             src="https://i.pravatar.cc/100"
             alt="Profile"
