@@ -15,7 +15,7 @@ const hostels = [
     ],
     amenities: ["WiFi", "Water", "Parking","Security","Electricity"],
      description: "Campus View Hostel offers spacious modern rooms, reliable WiFi, clean water throughout the week, 24-hour security and a quiet environment perfect for students.",
-
+   status: "Active",
   },
 
   {
@@ -34,6 +34,7 @@ const hostels = [
     ],
     amenities: ["WiFi", "Security", "Parking","Security"],
     description:"View is fantastic,reliable Wifi,Friendly neighbourhood,fresh water from well,24-hr security.",
+    status: "Pending"
   },
 
   {
@@ -52,6 +53,7 @@ const hostels = [
     ],
     amenities: ["Water", "WiFi","Electricity"],
     description:"Green environment full of trees,near Nkomongo market,Reliable wifi,clean water.",
+    status: "Fully Booked"
   },
 ];
 

@@ -1,3 +1,7 @@
+import LandlordBookings from "./pages/LandlordBookings";
+import MyListings from "./pages/MyListings";
+import AddHostel from "./pages/AddHostel";
+import LandlordDashboard from "./pages/LandlordDashboard";
 import Profile from "./pages/Profile";
 import MyBookings from "./pages/MyBookings";
 import SavedHostels from "./pages/SavedHostels";
@@ -26,6 +30,14 @@ function App() {
          <Route path="/bookings" element={<MyBookings />} />
 
          <Route path="/profile" element={<Profile />} />
+
+         <Route path="/landlord-dashboard" element={<LandlordDashboard />}/>
+
+         <Route path="/add-hostel" element={<AddHostel />} />
+
+         <Route path="/my-listings" element={<MyListings />} />
+
+         <Route path="/landlord-bookings" element={<LandlordBookings />}/>
       </Routes>
     </BrowserRouter>
   );
