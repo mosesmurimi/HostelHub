@@ -169,7 +169,9 @@ const LandlordDashboard = () => {
 
             </Link>
 
-            <button className="bg-purple-600 text-white rounded-2xl p-6 hover:bg-purple-700 transition">
+            <Link
+                to="/analytics"
+                className="bg-purple-600 text-white rounded-2xl p-6 hover:bg-purple-700 transition">
 
               <FaChartBar className="mx-auto text-3xl" />
 
@@ -179,7 +181,7 @@ const LandlordDashboard = () => {
 
               </p>
 
-            </button>
+            </Link>
 
           </div>
 

@@ -1,3 +1,4 @@
+import Analytics from "./pages/Analytics";
 import LandlordBookings from "./pages/LandlordBookings";
 import MyListings from "./pages/MyListings";
 import AddHostel from "./pages/AddHostel";
@@ -38,6 +39,8 @@ function App() {
          <Route path="/my-listings" element={<MyListings />} />
 
          <Route path="/landlord-bookings" element={<LandlordBookings />}/>
+
+         <Route path="/analytics" element={<Analytics />} />
       </Routes>
     </BrowserRouter>
   );
