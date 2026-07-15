@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 import { registerUser } from "../services/auth";
@@ -119,6 +120,18 @@ const Register = () => {
           >
             Create Account
           </button>
+
+          <div className="text-center mt-6">
+  <p className="text-gray-600">
+    Already have an account?{" "}
+    <Link
+      to="/login"
+      className="text-green-600 font-semibold hover:underline"
+    >
+      Login
+    </Link>
+  </p>
+</div>
 
         </form>
 

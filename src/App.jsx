@@ -1,3 +1,4 @@
+import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Analytics from "./pages/Analytics";
 import LandlordBookings from "./pages/LandlordBookings";
@@ -44,6 +45,8 @@ function App() {
          <Route path="/analytics" element={<Analytics />} />
 
          <Route path="/register" element={<Register />} />
+
+         <Route path="/login" element={<Login />} />
       </Routes>
     </BrowserRouter>
   );
