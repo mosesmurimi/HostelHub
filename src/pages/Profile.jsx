@@ -1,6 +1,18 @@
 import { FaUserEdit, FaCog, FaSignOutAlt } from "react-icons/fa";
+import { logoutUser } from "../services/auth";
 
 const Profile = () => {
+
+   const handleLogout = async () => {
+    try {
+      await logoutUser();
+      alert("Logged out successfully");
+    } catch (error) {
+      console.error("Logout error:", error);
+      alert("Logout failed");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-slate-100">
 
@@ -96,7 +108,9 @@ const Profile = () => {
 
           </button>
 
-          <button className="bg-red-600 hover:bg-red-700 text-white rounded-2xl p-6 flex flex-col items-center transition">
+          <button 
+          onClick={handleLogout}
+          className="bg-red-600 hover:bg-red-700 text-white rounded-2xl p-6 flex flex-col items-center transition">
 
             <FaSignOutAlt className="text-3xl mb-3" />
 

@@ -1,3 +1,4 @@
+import ProtectedRoute from "./components/ProtectedRoute";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Analytics from "./pages/Analytics";
@@ -26,15 +27,48 @@ function App() {
           element={<HostelDetails />}
         />
 
-         <Route path="/dashboard" element={<Dashboard />} />
+         <Route path="/dashboard" element={
+                                           <ProtectedRoute>
+                                           <Dashboard />
+                                           </ProtectedRoute>
+                                          }
+          />
 
-         <Route path="/saved" element={<SavedHostels />} />
+         <Route
+  path="/saved"
+  element={
+    <ProtectedRoute>
+      <SavedHostels />
+    </ProtectedRoute>
+  }
+/>
 
-         <Route path="/bookings" element={<MyBookings />} />
+         <Route
+  path="/bookings"
+  element={
+    <ProtectedRoute>
+      <MyBookings />
+    </ProtectedRoute>
+  }
+/>
 
-         <Route path="/profile" element={<Profile />} />
+         <Route
+  path="/profile"
+  element={
+    <ProtectedRoute>
+      <Profile />
+    </ProtectedRoute>
+  }
+/>
 
-         <Route path="/landlord-dashboard" element={<LandlordDashboard />}/>
+        <Route
+  path="/landlord-dashboard"
+  element={
+    <ProtectedRoute>
+      <LandlordDashboard />
+    </ProtectedRoute>
+  }
+/>
 
          <Route path="/add-hostel" element={<AddHostel />} />
 
