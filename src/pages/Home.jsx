@@ -1,9 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { collection, getDocs } from "firebase/firestore";
+
+import { db } from "../firebase/firebase";
+
 import Navbar from "../components/navigation/Navbar";
 import Hero from "../components/home/Hero";
 import SearchBar from "../components/home/SearchBar";
 import HostelCard from "../components/home/HostelCard";
-import hostels from "../constants/hostels";
 import BottomNav from "../components/navigation/BottomNav";
 import CategoryFilter from "../components/home/CategoryFilter";
 import PopularSection from "../components/home/PopularSection";
@@ -13,10 +16,55 @@ import Footer from "../components/home/Footer";
 
 const Home = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const filteredHostels = hostels.filter((hostel) => 
-  hostel.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-  hostel.location.toLowerCase().includes(searchTerm.toLowerCase())
-);
+
+  const [hostels, setHostels] = useState([]);
+
+  const [loading, setLoading] = useState(true);
+
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchHostels = async () => {
+      try {
+        const querySnapshot = await getDocs(
+          collection(db, "hostels")
+        );
+
+        const hostelData = querySnapshot.docs.map((doc) => {
+  const data = doc.data();
+
+  console.log("HOSTEL FROM FIRESTORE:", doc.id, data);
+
+  return {
+    id: doc.id,
+    ...data,
+  };
+});
+
+        setHostels(hostelData);
+
+      } catch (error) {
+        console.error("Error fetching hostels:", error);
+        setError("Unable to load hostels.");
+
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHostels();
+  }, []);
+
+  const filteredHostels = hostels.filter((hostel) =>
+    hostel.name
+      ?.toLowerCase()
+      .includes(searchTerm.toLowerCase()) ||
+
+    hostel.location
+      ?.toLowerCase()
+      .includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="bg-slate-100 min-h-screen">
 
@@ -25,70 +73,92 @@ const Home = () => {
       <Hero />
 
       <SearchBar
-  searchTerm={searchTerm}
-  setSearchTerm={setSearchTerm}
-/>
-      
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+      />
 
-      <CategoryFilter/>
+      <CategoryFilter />
 
-      <PopularSection/>
+      <PopularSection />
 
       <div className="max-w-7xl mx-auto px-6 mt-10 mb-6 flex justify-between items-center">
 
-  <h2 className="text-3xl font-bold text-gray-800">
-    Featured Hostels
-  </h2>
+        <h2 className="text-3xl font-bold text-gray-800">
+          Featured Hostels
+        </h2>
 
-  <button className="text-green-600 font-semibold hover:underline">
-    View All →
-  </button>
-  </div>
+        <button className="text-green-600 font-semibold hover:underline">
+          View All →
+        </button>
 
-<div className="max-w-7xl mx-auto px-6 py-10">
+      </div>
 
-  {filteredHostels.length > 0 ? (
+      <div className="max-w-7xl mx-auto px-6 py-10">
 
-    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {loading ? (
 
-      {filteredHostels.map((hostel) => (
-        <HostelCard
-          key={hostel.id}
-          hostel={hostel}
-        />
-      ))}
+          <div className="text-center py-20">
 
-    </div>
+            <h2 className="text-2xl font-bold text-gray-700">
+              Loading hostels...
+            </h2>
 
-  ) : (
+            <p className="text-gray-500 mt-3">
+              Finding the best accommodation for you.
+            </p>
 
-    <div className="text-center py-20">
+          </div>
 
-      <h2 className="text-3xl font-bold text-gray-700">
+        ) : error ? (
 
-         No hostels found
+          <div className="text-center py-20">
 
-      </h2>
+            <h2 className="text-2xl font-bold text-red-600">
+              {error}
+            </h2>
 
-      <p className="text-gray-500 mt-3">
+          </div>
 
-        Try searching by another hostel, university or town.
+        ) : filteredHostels.length > 0 ? (
 
-      </p>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
 
-    </div>
+            {filteredHostels.map((hostel) => (
 
-  )}
+              <HostelCard
+                key={hostel.id}
+                hostel={hostel}
+              />
 
-</div>
+            ))}
 
- <LandlordBanner/>
+          </div>
 
- <Universities/>
+        ) : (
 
- <Footer/>
+          <div className="text-center py-20">
 
-  <BottomNav/>
+            <h2 className="text-3xl font-bold text-gray-700">
+              No hostels found
+            </h2>
+
+            <p className="text-gray-500 mt-3">
+              Try searching by another hostel, university or town.
+            </p>
+
+          </div>
+
+        )}
+
+      </div>
+
+      <LandlordBanner />
+
+      <Universities />
+
+      <Footer />
+
+      <BottomNav />
 
     </div>
   );

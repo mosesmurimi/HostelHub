@@ -1,3 +1,4 @@
+import RoleProtectedRoute from "./components/RoleProtectedRoute";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -28,9 +29,9 @@ function App() {
         />
 
          <Route path="/dashboard" element={
-                                           <ProtectedRoute>
+                                           <RoleProtectedRoute allowedRole="student">
                                            <Dashboard />
-                                           </ProtectedRoute>
+                                           </RoleProtectedRoute>
                                           }
           />
 
@@ -64,9 +65,9 @@ function App() {
         <Route
   path="/landlord-dashboard"
   element={
-    <ProtectedRoute>
+    <RoleProtectedRoute allowedRole="landlord">
       <LandlordDashboard />
-    </ProtectedRoute>
+    </RoleProtectedRoute>
   }
 />
 
