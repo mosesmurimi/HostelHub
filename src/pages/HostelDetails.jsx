@@ -1,3 +1,4 @@
+import HostelCard from "../components/home/HostelCard";
 import {
   FiCheckCircle,
   FiPhone,
@@ -6,11 +7,12 @@ import {
 import { FiMapPin } from "react-icons/fi";
 import { FiArrowLeft } from "react-icons/fi";
 import { Link } from "react-router-dom";
-import HostelCard from "../components/home/HostelCard";
+import { useEffect, useState } from "react";
 import { FaHeart } from "react-icons/fa";
-import { useState } from "react";
+import { doc, getDoc,getDocs,collection } from "firebase/firestore";
+import { db } from "../firebase/firebase";
 import { useParams } from "react-router-dom";
-import hostels from "../constants/hostels";
+
 import {
   FaWifi,
   FaParking,
@@ -20,13 +22,136 @@ import {
 } from "react-icons/fa";
 
 const HostelDetails = () => {
-    const { id } = useParams();
-    const hostel = hostels.find(
-    (item) => item.id === Number(id)
-);
-const [selectedImage, setSelectedImage] = useState(
-  hostel.images[0]
-);
+
+  const { id } = useParams();
+
+  const [hostel, setHostel] = useState(null);
+
+  const [loading, setLoading] = useState(true);
+
+  const [selectedImage, setSelectedImage] = useState("");
+
+  const [similarHostels, setSimilarHostels] = useState([]);
+
+  useEffect(() => {
+
+    const fetchHostel = async () => {
+
+      try {
+
+        const hostelRef = doc(db, "hostels", id);
+
+        const hostelSnapshot = await getDoc(hostelRef);
+
+        if (hostelSnapshot.exists()) {
+
+          const hostelData = {
+            id: hostelSnapshot.id,
+            ...hostelSnapshot.data(),
+          };
+
+          setHostel(hostelData);
+
+          setSelectedImage(
+            hostelData.image || ""
+          );
+
+        }
+
+      } catch (error) {
+
+        console.error(
+          "Error fetching hostel:",
+          error
+        );
+
+      } finally {
+
+        setLoading(false);
+
+      }
+
+    };
+
+    fetchHostel();
+
+  }, [id]);
+
+
+
+  useEffect(() => {
+  const fetchSimilarHostels = async () => {
+    try {
+      const querySnapshot = await getDocs(
+        collection(db, "hostels")
+      );
+
+      const allHostels = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      const filteredHostels = allHostels
+        .filter((item) => item.id !== id)
+        .slice(0, 3);
+
+      setSimilarHostels(filteredHostels);
+
+    } catch (error) {
+      console.error(
+        "Error fetching similar hostels:",
+        error
+      );
+    }
+  };
+
+  fetchSimilarHostels();
+
+}, [id]);
+
+
+
+  if (loading) {
+
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+
+        <h2 className="text-2xl font-bold text-gray-600">
+
+          Loading hostel...
+
+        </h2>
+
+      </div>
+    );
+
+  }
+
+
+  if (!hostel) {
+
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center">
+
+        <h2 className="text-3xl font-bold text-red-500">
+
+          Hostel not found
+
+        </h2>
+
+        <Link
+          to="/"
+          className="mt-6 bg-green-600 text-white px-6 py-3 rounded-xl"
+        >
+
+          Back to Home
+
+        </Link>
+
+      </div>
+    );
+
+  }
   return (
     <div className="max-w-5xl mx-auto p-8">
 
@@ -41,33 +166,28 @@ const [selectedImage, setSelectedImage] = useState(
   <div className="relative">
 
   <img
-  src={selectedImage}
+  src={selectedImage ||
+    "https://images.unsplash.com/photo-1555854877-bab0e564b8d5"}
   alt={hostel.name}
   className="w-full h-96 object-cover rounded-3xl transition-all duration-500 hover:scale-[1.02]"
 />
 <div className="grid grid-cols-4 gap-4 mt-5">
 
-  {hostel.images.map((image) => (
+  {hostel.image && (
 
     <img
-      key={image}
-      src={image}
-      alt="Hostel"
-      onClick={() => setSelectedImage(image)}
+      src={hostel.image}
+      alt={hostel.name}
+      onClick={() => setSelectedImage(hostel.image)}
       className={`h-28 w-full object-cover rounded-xl cursor-pointer border-4
-transition-all duration-300 hover:scale-105
-
       ${
-        selectedImage === image
-
+        selectedImage === hostel.image
           ? "border-green-600"
-
-          : "border-transparent hover:border-green-300"
-
+          : "border-transparent"
       }`}
     />
 
-  ))}
+  )}
 
 </div>
 
@@ -113,7 +233,10 @@ transition-all duration-300 hover:scale-105
 
       <h2 className="text-4xl font-bold text-green-600">
 
-        KSh {hostel.price.toLocaleString()}
+        KSh{" "}
+{hostel.price
+  ? Number(hostel.price).toLocaleString()
+  : "Price unavailable"}
 
       </h2>
 
@@ -173,7 +296,7 @@ Save to Favorites
 
   <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
 
-    {hostel.amenities.map((item) => {
+    {(hostel.amenities || []).map((item) => {
 
       let icon;
 
@@ -400,34 +523,41 @@ Location
 </div>
 
 
+<div className="mt-16">
 
-<h2 className="text-3xl font-bold mt-16 mb-8">
+  <h2 className="text-3xl font-bold text-gray-800 mb-8">
+    Similar Hostels
+  </h2>
 
-Similar Hostels
+  {similarHostels.length > 0 ? (
 
-</h2>
+    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
 
-<div className="grid md:grid-cols-3 gap-8">
+      {similarHostels.map((item) => (
 
-{hostels
+        <HostelCard
+          key={item.id}
+          hostel={item}
+        />
 
-.filter(item => item.id !== hostel.id)
+      ))}
 
-.slice(0,3)
+    </div>
 
-.map(item=>(
+  ) : (
 
-<HostelCard
+    <div className="bg-white rounded-2xl p-8 text-center">
 
-key={item.id}
+      <p className="text-gray-500">
+        No similar hostels available yet.
+      </p>
 
-hostel={item}
+    </div>
 
-/>
-
-))}
+  )}
 
 </div>
+
 
 
 </div>
