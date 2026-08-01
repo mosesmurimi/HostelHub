@@ -18,6 +18,84 @@ const user = auth.currentUser;
 
 const [landlordName, setLandlordName] = useState("Landlord");
 const [hostelCount, setHostelCount] = useState(0);
+const [bookingCount, setBookingCount] = useState(0);
+const [occupancy, setOccupancy] = useState(0);
+
+
+
+useEffect(() => {
+const fetchOccupancy = async () => {
+
+  if (!auth.currentUser) return;
+
+  try {
+
+    const q = query(
+      collection(db, "hostels"),
+      where("ownerId", "==", auth.currentUser.uid)
+    );
+
+    const snapshot = await getDocs(q);
+
+    let totalRooms = 0;
+    let occupiedRooms = 0;
+
+    snapshot.forEach((doc) => {
+
+      const hostel = doc.data();
+
+      totalRooms += Number(hostel.totalRooms || 0);
+
+      occupiedRooms += Number(hostel.occupiedRooms || 0);
+
+    });
+
+    console.log("Total Rooms:", totalRooms);
+
+    console.log("Occupied Rooms:", occupiedRooms);
+
+    const percent =
+      totalRooms > 0
+        ? Math.round((occupiedRooms / totalRooms) * 100)
+        : 0;
+
+    setOccupancy(percent);
+
+  } catch (error) {
+
+    console.error(error);
+
+  }
+
+};
+fetchOccupancy();
+}, []);
+
+
+
+useEffect(() => {
+  const fetchBookingCount = async () => {
+    if (!auth.currentUser) return;
+
+    try {
+      const q = query(
+        collection(db, "bookings"),
+        where("landlordId", "==", auth.currentUser.uid)
+      );
+
+      const snapshot = await getDocs(q);
+
+      setBookingCount(snapshot.size);
+
+      console.log("Total bookings:", snapshot.size);
+
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  fetchBookingCount();
+}, []);
 
 useEffect(() => {
 
@@ -109,7 +187,7 @@ fetchHostels();
 
             <h2 className="text-4xl font-bold mt-4">
 
-              23
+              {bookingCount}
 
             </h2>
 
@@ -127,7 +205,7 @@ fetchHostels();
 
             <h2 className="text-4xl font-bold mt-4">
 
-              92%
+              {occupancy}%
 
             </h2>
 

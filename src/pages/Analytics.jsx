@@ -1,3 +1,13 @@
+import { useEffect, useState } from "react";
+
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore";
+
+import { auth, db } from "../firebase/firebase";
 import {
   FaTrophy,
   FaArrowTrendUp,
@@ -14,6 +24,106 @@ import {
 } from "react-icons/fa";
 
 const Analytics = () => {
+
+  const [stats, setStats] = useState({
+
+  revenue: 0,
+
+  bookings: 0,
+
+  hostels: 0,
+
+  occupancy: 0,
+
+});
+
+
+useEffect(() => {
+
+  const fetchAnalytics = async () => {
+
+    if (!auth.currentUser) return;
+
+    try {
+
+        const hostelQuery = query(
+            collection(db,"hostels"),
+            where("ownerId","==",auth.currentUser.uid)
+        );
+
+        const hostelSnapshot = await getDocs(hostelQuery);
+
+        const bookingQuery = query(
+            collection(db,"bookings"),
+            where("landlordId","==",auth.currentUser.uid)
+        );
+
+        const bookingSnapshot = await getDocs(bookingQuery);
+
+        let revenue = 0;
+
+        let totalRooms = 0;
+
+        let occupiedRooms = 0;
+
+        hostelSnapshot.forEach(doc=>{
+
+            const hostel = doc.data();
+
+            totalRooms += Number(hostel.totalRooms || 0);
+
+            occupiedRooms += Number(hostel.occupiedRooms || 0);
+
+        });
+
+        bookingSnapshot.forEach(doc=>{
+
+            const booking = doc.data();
+
+            if(booking.status==="Confirmed"){
+
+                revenue += Number(booking.price);
+
+            }
+
+        });
+
+        const occupancy =
+
+            totalRooms>0
+
+            ? Math.round((occupiedRooms/totalRooms)*100)
+
+            :0;
+
+        setStats({
+
+            revenue,
+
+            bookings: bookingSnapshot.size,
+
+            hostels: hostelSnapshot.size,
+
+            occupancy,
+
+        });
+
+    }
+
+    catch(error){
+
+        console.error(error);
+
+    }
+
+};
+
+fetchAnalytics();
+
+}, []);
+
+
+
   return (
     <div className="min-h-screen bg-slate-100">
 
@@ -46,7 +156,7 @@ const Analytics = () => {
             <FaMoneyBillWave className="text-4xl text-green-600" />
 
             <h2 className="text-4xl font-bold mt-4">
-              KSh 80,000
+              KSh {stats.revenue.toLocaleString()}
             </h2>
 
             <p className="text-gray-500 mt-2">
@@ -60,7 +170,7 @@ const Analytics = () => {
             <FaCalendarCheck className="text-4xl text-blue-600" />
 
             <h2 className="text-4xl font-bold mt-4">
-              23
+              {stats.bookings}
             </h2>
 
             <p className="text-gray-500 mt-2">
@@ -74,7 +184,7 @@ const Analytics = () => {
             <FaHome className="text-4xl text-orange-500" />
 
             <h2 className="text-4xl font-bold mt-4">
-              8
+              {stats.hostels}
             </h2>
 
             <p className="text-gray-500 mt-2">
@@ -88,7 +198,7 @@ const Analytics = () => {
             <FaUsers className="text-4xl text-purple-600" />
 
             <h2 className="text-4xl font-bold mt-4">
-              92%
+              {stats.occupancy}%
             </h2>
 
             <p className="text-gray-500 mt-2">

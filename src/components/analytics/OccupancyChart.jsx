@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 import {
   ResponsiveContainer,
   BarChart,
@@ -8,27 +10,75 @@ import {
   Tooltip,
 } from "recharts";
 
-const data = [
-  {
-    hostel: "Campus View",
-    occupancy: 95,
-  },
-  {
-    hostel: "Green Court",
-    occupancy: 90,
-  },
-  {
-    hostel: "Victory",
-    occupancy: 82,
-  },
-  {
-    hostel: "Sunrise",
-    occupancy: 78,
-  },
-];
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore";
+
+import { db, auth } from "../../firebase/firebase";
 
 const OccupancyChart = () => {
+
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+
+    const fetchOccupancy = async () => {
+
+      if (!auth.currentUser) return;
+
+      try {
+
+        const q = query(
+          collection(db, "hostels"),
+          where("ownerId", "==", auth.currentUser.uid)
+        );
+
+        const snapshot = await getDocs(q);
+
+        const chartData = snapshot.docs.map((doc) => {
+
+          const hostel = doc.data();
+
+          const totalRooms = Number(hostel.totalRooms || 0);
+
+          const occupiedRooms = Number(hostel.occupiedRooms || 0);
+
+          const occupancy =
+            totalRooms > 0
+              ? Math.round((occupiedRooms / totalRooms) * 100)
+              : 0;
+
+          return {
+
+            hostel: hostel.name,
+
+            occupancy,
+
+          };
+
+        });
+
+        console.log("Occupancy Chart:", chartData);
+
+        setData(chartData);
+
+      } catch (error) {
+
+        console.error(error);
+
+      }
+
+    };
+
+    fetchOccupancy();
+
+  }, []);
+
   return (
+
     <div className="h-80">
 
       <ResponsiveContainer>
@@ -40,14 +90,20 @@ const OccupancyChart = () => {
 
           <CartesianGrid strokeDasharray="3 3"/>
 
-          <XAxis type="number"/>
+          <XAxis
+            type="number"
+            domain={[0,100]}
+          />
 
           <YAxis
             dataKey="hostel"
             type="category"
+            width={120}
           />
 
-          <Tooltip/>
+          <Tooltip
+            formatter={(value)=>`${value}%`}
+          />
 
           <Bar
             dataKey="occupancy"
@@ -60,7 +116,9 @@ const OccupancyChart = () => {
       </ResponsiveContainer>
 
     </div>
+
   );
+
 };
 
 export default OccupancyChart;

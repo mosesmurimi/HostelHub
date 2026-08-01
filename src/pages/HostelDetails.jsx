@@ -16,9 +16,17 @@ import { FiArrowLeft } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { FaHeart } from "react-icons/fa";
-import { doc, getDoc,getDocs,collection } from "firebase/firestore";
+import { 
+  doc, 
+  getDoc,
+  getDocs,
+  collection,
+  addDoc,
+  serverTimestamp,
+ } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 import { useParams } from "react-router-dom";
+import { auth } from "../firebase/firebase";
 
 import {
   FaWifi,
@@ -115,6 +123,76 @@ const HostelDetails = () => {
   fetchSimilarHostels();
 
 }, [id]);
+
+
+
+const handleBooking = async () => {
+
+  console.log("✅ BOOK BUTTON CLICKED");
+
+  if (!auth.currentUser) {
+    alert("Please login first.");
+    return;
+  }
+
+  try {
+
+    console.log("Fetching student profile...");
+
+    const studentRef = doc(db, "users", auth.currentUser.uid);
+
+    const studentSnap = await getDoc(studentRef);
+
+    if (!studentSnap.exists()) {
+      alert("Student profile not found.");
+      return;
+    }
+
+    const studentData = studentSnap.data();
+
+    console.log("Student:", studentData);
+
+    console.log("Hostel:", hostel);
+
+    console.log("🚀 About to save booking");
+
+    await addDoc(collection(db, "bookings"), {
+
+      studentId: auth.currentUser.uid,
+
+      studentName: studentData.name,
+
+      studentEmail: studentData.email,
+
+      landlordId: hostel.ownerId,
+
+      hostelId: hostel.id,
+
+      hostelName: hostel.name,
+
+      hostelLocation: hostel.location,
+
+      price: hostel.price,
+
+      status: "Pending",
+
+      bookingDate: serverTimestamp(),
+
+    });
+
+    console.log("🎉 Booking saved successfully");
+
+    alert("Booking submitted successfully!");
+
+  } catch (error) {
+
+    console.error("❌ BOOKING ERROR:", error);
+
+    alert(error.message);
+
+  }
+
+};
 
 
 
@@ -286,7 +364,9 @@ const HostelDetails = () => {
 
     </div>
 
-    <button className="bg-green-600 hover:bg-green-700 text-white px-10 py-4 rounded-2xl font-bold text-lg transition">
+    <button
+    onClick={handleBooking}
+     className="bg-green-600 hover:bg-green-700 text-white px-10 py-4 rounded-2xl font-bold text-lg transition">
 
       Book Viewing
 

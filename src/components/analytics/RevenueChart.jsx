@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 import {
   LineChart,
   Line,
@@ -8,17 +10,94 @@ import {
   CartesianGrid,
 } from "recharts";
 
-const data = [
-  { month: "Jan", revenue: 42000 },
-  { month: "Feb", revenue: 51000 },
-  { month: "Mar", revenue: 59000 },
-  { month: "Apr", revenue: 65000 },
-  { month: "May", revenue: 73000 },
-  { month: "Jun", revenue: 80000 },
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore";
+
+import { db, auth } from "../../firebase/firebase";
+
+const months = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
 ];
 
 const RevenueChart = () => {
+
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+
+    const fetchRevenue = async () => {
+
+      if (!auth.currentUser) return;
+
+      try {
+
+        const q = query(
+          collection(db, "bookings"),
+          where("landlordId", "==", auth.currentUser.uid)
+        );
+
+        const snapshot = await getDocs(q);
+
+        const monthlyRevenue = new Array(12).fill(0);
+
+        snapshot.forEach((doc) => {
+
+          const booking = doc.data();
+
+          if (
+            booking.status === "Confirmed" &&
+            booking.bookingDate
+          ) {
+
+            const month =
+              booking.bookingDate.toDate().getMonth();
+
+            monthlyRevenue[month] += Number(
+              booking.price || 0
+            );
+
+          }
+
+        });
+
+        const chartData = months.map((month, index) => ({
+          month,
+          revenue: monthlyRevenue[index],
+        }));
+
+        console.log("Revenue Chart:", chartData);
+
+        setData(chartData);
+
+      } catch (error) {
+
+        console.error(error);
+
+      }
+
+    };
+
+    fetchRevenue();
+
+  }, []);
+
   return (
+
     <div className="w-full h-80">
 
       <ResponsiveContainer width="100%" height="100%">
@@ -31,7 +110,11 @@ const RevenueChart = () => {
 
           <YAxis />
 
-          <Tooltip />
+          <Tooltip
+            formatter={(value) =>
+              `KSh ${Number(value).toLocaleString()}`
+            }
+          />
 
           <Line
             type="monotone"
@@ -45,7 +128,9 @@ const RevenueChart = () => {
       </ResponsiveContainer>
 
     </div>
+
   );
+
 };
 
 export default RevenueChart;

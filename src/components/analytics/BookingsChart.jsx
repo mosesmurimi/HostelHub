@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 import {
   ResponsiveContainer,
   BarChart,
@@ -8,17 +10,81 @@ import {
   Tooltip,
 } from "recharts";
 
-const data = [
-  { month: "Jan", bookings: 8 },
-  { month: "Feb", bookings: 12 },
-  { month: "Mar", bookings: 15 },
-  { month: "Apr", bookings: 18 },
-  { month: "May", bookings: 20 },
-  { month: "Jun", bookings: 23 },
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore";
+
+import { db, auth } from "../../firebase/firebase";
+
+const months = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
 ];
 
 const BookingsChart = () => {
+
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+
+    const fetchBookings = async () => {
+
+      if (!auth.currentUser) return;
+
+      const q = query(
+        collection(db, "bookings"),
+        where("landlordId", "==", auth.currentUser.uid)
+      );
+
+      const snapshot = await getDocs(q);
+
+      const monthlyBookings = new Array(12).fill(0);
+
+      snapshot.forEach((doc) => {
+
+        const booking = doc.data();
+
+        if (booking.bookingDate) {
+
+          const month =
+            booking.bookingDate.toDate().getMonth();
+
+          monthlyBookings[month]++;
+
+        }
+
+      });
+
+      const chartData = months.map((month, index) => ({
+        month,
+        bookings: monthlyBookings[index],
+      }));
+
+      console.log(chartData);
+
+      setData(chartData);
+
+    };
+
+    fetchBookings();
+
+  }, []);
+
   return (
+
     <div className="h-80">
 
       <ResponsiveContainer>
@@ -36,7 +102,7 @@ const BookingsChart = () => {
           <Bar
             dataKey="bookings"
             fill="#2563eb"
-            radius={[8,8,0,0]}
+            radius={[8, 8, 0, 0]}
           />
 
         </BarChart>
@@ -44,7 +110,9 @@ const BookingsChart = () => {
       </ResponsiveContainer>
 
     </div>
+
   );
+
 };
 
 export default BookingsChart;
