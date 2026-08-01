@@ -7,6 +7,8 @@ import {
   FaMapMarkerAlt,
 } from "react-icons/fa";
 
+import { useNavigate } from "react-router-dom";
+
 import { useEffect, useState } from "react";
 
 import {
@@ -21,6 +23,8 @@ import {
 import { db, auth } from "../firebase/firebase";
 
 const MyListings = () => {
+
+  const navigate = useNavigate();
 
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -192,10 +196,11 @@ const MyListings = () => {
                 {/* Image */}
 
                 <img
-                  src={
-                    hostel.image ||
-                    "https://images.unsplash.com/photo-1555854877-bab0e564b8d5"
-                  }
+                   src={
+                     hostel.images?.[0] ||
+                     hostel.image ||
+                     "https://images.unsplash.com/photo-1555854877-bab0e564b8d5"
+                   }
                   alt={hostel.name}
                   className="w-full h-56 object-cover"
                 />
@@ -271,6 +276,9 @@ const MyListings = () => {
                   <div className="flex gap-4 mt-8">
 
                     <button
+                     onClick={() =>
+                             navigate(`/edit-hostel/${hostel.id}`)
+                           }
                       className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl flex justify-center items-center gap-2 transition"
                     >
 

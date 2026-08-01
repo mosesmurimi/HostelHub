@@ -1,3 +1,7 @@
+import { collection, query, where, getDocs } from "firebase/firestore";
+import { auth, db } from "../firebase/firebase";
+import { doc, getDoc } from "firebase/firestore";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   FaHome,
@@ -10,6 +14,46 @@ import {
 } from "react-icons/fa";
 
 const LandlordDashboard = () => {
+const user = auth.currentUser;
+
+const [landlordName, setLandlordName] = useState("Landlord");
+const [hostelCount, setHostelCount] = useState(0);
+
+useEffect(() => {
+
+  const fetchHostels = async () => {
+
+  const q = query(
+    collection(db, "hostels"),
+    where("ownerId", "==", user.uid)
+  );
+
+  const snapshot = await getDocs(q);
+
+  setHostelCount(snapshot.size);
+
+};
+
+fetchHostels();
+
+
+  const fetchLandlord = async () => {
+
+    if (!user) return;
+
+    const docRef = doc(db, "users", user.uid);
+
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      setLandlordName(docSnap.data().name);
+    }
+
+  };
+
+  fetchLandlord();
+
+}, [user]);
   return (
     <div className="min-h-screen bg-slate-100">
 
@@ -27,7 +71,7 @@ const LandlordDashboard = () => {
 
           <p className="mt-4 text-green-100 text-lg">
 
-            Welcome back, Moses.
+            Welcome back, {landlordName}.
 
           </p>
 
@@ -47,7 +91,7 @@ const LandlordDashboard = () => {
 
             <h2 className="text-4xl font-bold mt-4">
 
-              8
+              {hostelCount}
 
             </h2>
 

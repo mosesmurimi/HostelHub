@@ -11,8 +11,11 @@ const HostelCard = ({hostel}) => {
       {/* Hostel Image */}
     <div className="overflow-hidden">
       <img
-        src={hostel.image}
-        alt="Hostel"
+        src={
+    hostel.images?.[0] ||
+    hostel.image ||
+    "https://via.placeholder.com/500x300?text=No+Image"}
+    alt={hostel.name}
           className="w-full h-56 object-cover hover:scale-110 transition-transform duration-500"
       />
       </div>
@@ -89,6 +92,34 @@ const HostelCard = ({hostel}) => {
             </p>
 
           </div>
+
+          <div className="mt-4 space-y-2">
+
+  <p className="text-gray-700 font-semibold">
+
+    🏠 {hostel.roomType}
+
+  </p>
+
+  {hostel.availableRooms > 0 ? (
+
+    <span className="inline-block bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-bold">
+
+      🟢 {hostel.availableRooms} Rooms Available
+
+    </span>
+
+  ) : (
+
+    <span className="inline-block bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-bold">
+
+      🔴 Fully Booked
+
+    </span>
+
+  )}
+
+</div>
 
           <button className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl font-semibold transition">
 

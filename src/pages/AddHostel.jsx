@@ -1,9 +1,38 @@
 import { useState } from "react";
-import { FaUpload } from "react-icons/fa";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db, auth } from "../firebase/firebase";
 
-const AddHostel = () => {
+const AddHostel = () => { 
+
+
+  const uploadImageToCloudinary = async (image) => {
+  const formData = new FormData();
+
+  formData.append("file", image);
+  formData.append("upload_preset", "hostelhub_uploads");
+
+  const response = await fetch(
+    "https://api.cloudinary.com/v1_1/wfvj46ip/image/upload",
+    {
+      method: "POST",
+      body: formData,
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error?.message || "Upload failed");
+  }
+
+  return data.secure_url;
+};
+
+
+  const [images, setImages] = useState([]);
+  const [roomType, setRoomType] = useState("");
+  const [totalRooms, setTotalRooms] = useState("");
+  const [availableRooms,setAvailableRooms]=useState("");
   const [name, setName] = useState("");
   const [university, setUniversity] = useState("Kirinyaga University");
   const [location, setLocation] = useState("");
@@ -51,24 +80,67 @@ const AddHostel = () => {
     try {
       setLoading(true);
 
-      await addDoc(collection(db, "hostels"), {
-        name,
-        university,
-        location,
-        price: Number(price),
-        description,
+      if (!roomType || !totalRooms || !availableRooms) {
+  alert("Please complete the room information.");
+  return;
+}
 
-        amenities: Object.keys(amenities).filter(
-  (amenity) => amenities[amenity]
-),
+if (Number(availableRooms) > Number(totalRooms)) {
+  alert("Available rooms cannot exceed total rooms.");
+  return;
+}
 
-        ownerId: auth.currentUser.uid,
 
-        availableRooms: 0,
-        totalRooms: 0,
+      // Upload all selected images to Cloudinary
+const imageUrls = await Promise.all(
+  images.map((image) => uploadImageToCloudinary(image))
+);
 
-        createdAt: serverTimestamp(),
-      });
+console.log("Uploaded Images:", imageUrls);
+
+
+
+  
+
+// Save hostel to Firestore
+await addDoc(collection(db, "hostels"), {
+
+  name,
+  university,
+  location,
+  price: Number(price),
+  description,
+  images: imageUrls,
+
+  amenities: Object.keys(amenities).filter(
+    (amenity) => amenities[amenity]
+  ),
+
+  // Cloudinary image URLs
+
+
+  ownerId: auth.currentUser.uid,
+
+  roomType,
+
+totalRooms:Number(totalRooms),
+
+availableRooms:Number(availableRooms),
+
+occupiedRooms:
+Number(totalRooms)-Number(availableRooms),
+
+status:
+Number(availableRooms)>0
+?"Available"
+:"Fully Booked",
+
+
+  createdAt: serverTimestamp(),
+
+});
+
+
 
       alert("Hostel published successfully! 🎉");
 
@@ -77,7 +149,13 @@ const AddHostel = () => {
       setUniversity("Kirinyaga University");
       setLocation("");
       setPrice("");
+      setRoomType("");
+
+      setTotalRooms("");
+
+      setAvailableRooms("");
       setDescription("");
+      setImages([]);
 
       setAmenities({
         wifi: false,
@@ -208,6 +286,73 @@ const AddHostel = () => {
 
             </div>
 
+            <div>
+
+  <label className="font-semibold">
+    Room Type
+  </label>
+
+  <select
+    className="w-full mt-3 border rounded-xl p-4"
+    value={roomType}
+    onChange={(e) => setRoomType(e.target.value)}
+  >
+
+    <option value="">Select Room Type</option>
+
+    <option>Single Room</option>
+
+    <option>Bedsitter</option>
+
+    <option>One Bedroom</option>
+
+    <option>Two Bedroom</option>
+
+    <option>Studio Apartment</option>
+
+  </select>
+
+</div>
+
+
+
+<div>
+
+<label className="font-semibold">
+
+Total Number of Rooms
+
+</label>
+
+<input
+type="number"
+placeholder="50"
+className="w-full mt-3 border rounded-xl p-4"
+value={totalRooms}
+onChange={(e)=>setTotalRooms(e.target.value)}
+/>
+
+</div>
+
+
+<div>
+
+<label className="font-semibold">
+
+Available Rooms
+
+</label>
+
+<input
+type="number"
+placeholder="18"
+className="w-full mt-3 border rounded-xl p-4"
+value={availableRooms}
+onChange={(e)=>setAvailableRooms(e.target.value)}
+/>
+
+</div>
+
             {/* Description */}
 
             <div>
@@ -290,25 +435,77 @@ const AddHostel = () => {
 
             </div>
 
-            {/* Images - Coming Soon */}
+            
 
-            <div>
+            {/* Hostel Images */}
 
-              <label className="font-semibold">
-                Hostel Images
-              </label>
+<div>
 
-              <div className="mt-4 border-2 border-dashed rounded-2xl p-10 text-center">
+  <label className="font-semibold">
+    Hostel Images (Maximum 5)
+  </label>
 
-                <FaUpload className="mx-auto text-5xl text-green-600" />
+  <p className="text-sm text-gray-500 mt-2">
+The first image becomes the hostel cover photo.
+The remaining images appear in the gallery.
+</p>
 
-                <p className="mt-4 text-gray-500">
-                  Image upload will be connected to Firebase Storage next.
-                </p>
+  <input
+  type="file"
+  accept="image/*"
+  multiple
+  onChange={(e) => {
+    const selectedImages = Array.from(e.target.files);
 
-              </div>
+    if (selectedImages.length > 5) {
+      alert("Maximum 5 images allowed.");
+      return;
+    }
 
-            </div>
+    setImages(selectedImages);
+  }}
+  className="w-full mt-4 border rounded-xl p-4"
+/>
+
+  {/* Image Previews */}
+
+  {images.length > 0 && (
+
+<div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-6">
+
+  {images.map((image, index) => (
+
+    <div key={index}>
+
+      <img
+        src={URL.createObjectURL(image)}
+        alt={`Preview ${index + 1}`}
+        className={`rounded-xl object-cover w-full ${
+          index === 0
+            ? "h-44 border-4 border-green-600"
+            : "h-28"
+        }`}
+      />
+
+      <p className="text-center mt-2 text-sm">
+
+        {index === 0
+          ? "🏠 Cover"
+          : `Gallery ${index}`}
+
+      </p>
+
+    </div>
+
+  ))}
+
+</div>
+
+)}
+
+</div>
+
+
 
             {/* Google Maps - Coming Soon */}
 

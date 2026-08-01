@@ -1,3 +1,5 @@
+import TestUpload from "./pages/TestUpload";
+import EditHostel from "./pages/EditHostel";
 import RoleProtectedRoute from "./components/RoleProtectedRoute";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Login from "./pages/Login";
@@ -82,6 +84,13 @@ function App() {
          <Route path="/register" element={<Register />} />
 
          <Route path="/login" element={<Login />} />
+
+         <Route path="/edit-hostel/:id" element={<EditHostel />}/>
+
+         <Route
+  path="/test-upload"
+  element={<TestUpload />}
+/>
       </Routes>
     </BrowserRouter>
   );

@@ -1,3 +1,10 @@
+
+import {
+  FaBed,
+  FaDoorOpen,
+  FaBuilding,
+  FaCheckCircle,
+} from "react-icons/fa";
 import HostelCard from "../components/home/HostelCard";
 import {
   FiCheckCircle,
@@ -166,28 +173,39 @@ const HostelDetails = () => {
   <div className="relative">
 
   <img
-  src={selectedImage ||
-    "https://images.unsplash.com/photo-1555854877-bab0e564b8d5"}
+  src={
+    selectedImage ||
+    hostel.images?.[0] ||
+    hostel.image ||
+    "https://images.unsplash.com/photo-1555854877-bab0e564b8d5"
+  }
   alt={hostel.name}
   className="w-full h-96 object-cover rounded-3xl transition-all duration-500 hover:scale-[1.02]"
 />
+
+
 <div className="grid grid-cols-4 gap-4 mt-5">
 
-  {hostel.image && (
+  {(hostel.images?.length > 0
+    ? hostel.images
+    : hostel.image
+      ? [hostel.image]
+      : []
+  ).map((image, index) => (
 
     <img
-      src={hostel.image}
-      alt={hostel.name}
-      onClick={() => setSelectedImage(hostel.image)}
-      className={`h-28 w-full object-cover rounded-xl cursor-pointer border-4
-      ${
-        selectedImage === hostel.image
+      key={index}
+      src={image}
+      alt={`${hostel.name} ${index + 1}`}
+      onClick={() => setSelectedImage(image)}
+      className={`h-28 w-full object-cover rounded-xl cursor-pointer border-4 ${
+        selectedImage === image
           ? "border-green-600"
           : "border-transparent"
       }`}
     />
 
-  )}
+  ))}
 
 </div>
 
@@ -198,6 +216,26 @@ const HostelDetails = () => {
     <h1 className="text-5xl font-bold">
       {hostel.name}
     </h1>
+
+    
+
+    {hostel.availableRooms > 0 ? (
+
+  <span className="inline-block bg-green-100 text-green-700 px-4 py-2 rounded-full font-semibold mt-4">
+
+    🟢 Rooms Available
+
+  </span>
+
+) : (
+
+  <span className="inline-block bg-red-100 text-red-700 px-4 py-2 rounded-full font-semibold mt-4">
+
+    🔴 Fully Booked
+
+  </span>
+
+)}
 
     <p className="text-xl mt-2">
       {hostel.location}
@@ -283,6 +321,106 @@ Save to Favorites
         {hostel.description}
 
     </p>
+
+</div>
+
+<div className="bg-white rounded-3xl shadow-lg p-8 mt-8">
+
+  <h2 className="text-2xl font-bold mb-6">
+    Hostel Information
+  </h2>
+
+  <div className="grid md:grid-cols-2 gap-6">
+
+    <div className="flex items-center gap-4">
+
+      <div className="bg-green-100 p-4 rounded-full">
+
+        <FaBed className="text-green-600 text-2xl" />
+
+      </div>
+
+      <div>
+
+        <p className="text-gray-500">
+          Room Type
+        </p>
+
+        <h3 className="font-bold text-lg">
+          {hostel.roomType}
+        </h3>
+
+      </div>
+
+    </div>
+
+    <div className="flex items-center gap-4">
+
+      <div className="bg-blue-100 p-4 rounded-full">
+
+        <FaBuilding className="text-blue-600 text-2xl" />
+
+      </div>
+
+      <div>
+
+        <p className="text-gray-500">
+          Total Rooms
+        </p>
+
+        <h3 className="font-bold text-lg">
+          {hostel.totalRooms}
+        </h3>
+
+      </div>
+
+    </div>
+
+    <div className="flex items-center gap-4">
+
+      <div className="bg-green-100 p-4 rounded-full">
+
+        <FaDoorOpen className="text-green-600 text-2xl" />
+
+      </div>
+
+      <div>
+
+        <p className="text-gray-500">
+          Available Rooms
+        </p>
+
+        <h3 className="font-bold text-lg">
+          {hostel.availableRooms}
+        </h3>
+
+      </div>
+
+    </div>
+
+    <div className="flex items-center gap-4">
+
+      <div className="bg-purple-100 p-4 rounded-full">
+
+        <FaCheckCircle className="text-purple-600 text-2xl" />
+
+      </div>
+
+      <div>
+
+        <p className="text-gray-500">
+          Occupied Rooms
+        </p>
+
+        <h3 className="font-bold text-lg">
+          {hostel.occupiedRooms}
+        </h3>
+
+      </div>
+
+    </div>
+
+  </div>
 
 </div>
 
