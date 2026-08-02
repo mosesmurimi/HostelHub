@@ -25,6 +25,21 @@ import {
 
 const Analytics = () => {
 
+  const [analytics, setAnalytics] = useState({
+
+  bestHostel: "None",
+
+  bestOccupancy: 0,
+
+  highestRevenue: 0,
+
+  overallOccupancy: 0,
+
+  growth: 0,
+
+});
+
+
   const [stats, setStats] = useState({
 
   revenue: 0,
@@ -36,6 +51,160 @@ const Analytics = () => {
   occupancy: 0,
 
 });
+
+
+useEffect(() => {
+
+  const fetchAnalytics = async () => {
+
+    if (!auth.currentUser) return;
+
+    try {
+
+      const hostelQuery = query(
+        collection(db, "hostels"),
+        where("ownerId", "==", auth.currentUser.uid)
+      );
+
+      const bookingQuery = query(
+        collection(db, "bookings"),
+        where("landlordId", "==", auth.currentUser.uid)
+      );
+
+      const hostelSnapshot = await getDocs(hostelQuery);
+
+      const bookingSnapshot = await getDocs(bookingQuery);
+
+      let totalRooms = 0;
+
+      let occupiedRooms = 0;
+
+      let bestHostel = "";
+
+      let bestOccupancy = 0;
+
+      hostelSnapshot.forEach((doc) => {
+
+        const hostel = doc.data();
+
+        const total = Number(hostel.totalRooms || 0);
+
+        const occupied = Number(hostel.occupiedRooms || 0);
+
+        totalRooms += total;
+
+        occupiedRooms += occupied;
+
+        const occupancy =
+          total > 0
+            ? (occupied / total) * 100
+            : 0;
+
+        if (occupancy > bestOccupancy) {
+
+          bestOccupancy = occupancy;
+
+          bestHostel = hostel.name;
+
+        }
+
+      });
+
+      let highestRevenue = 0;
+
+      const monthlyRevenue = new Array(12).fill(0);
+
+      bookingSnapshot.forEach((doc) => {
+
+        const booking = doc.data();
+
+        if (booking.status === "Confirmed") {
+
+          highestRevenue += Number(
+            booking.price || 0
+          );
+
+          if (booking.bookingDate) {
+
+            const month =
+              booking.bookingDate
+                .toDate()
+                .getMonth();
+
+            monthlyRevenue[month] += Number(
+              booking.price || 0
+            );
+
+          }
+
+        }
+
+      });
+
+      const currentMonth =
+        new Date().getMonth();
+
+      const previousMonth =
+        currentMonth === 0
+          ? 11
+          : currentMonth - 1;
+
+      const currentRevenue =
+        monthlyRevenue[currentMonth];
+
+      const previousRevenue =
+        monthlyRevenue[previousMonth];
+
+      const growth =
+        previousRevenue > 0
+
+          ? (
+              ((currentRevenue -
+                previousRevenue) /
+                previousRevenue) *
+              100
+            ).toFixed(1)
+
+          : 0;
+
+      const overallOccupancy =
+        totalRooms > 0
+
+          ? Math.round(
+              (occupiedRooms / totalRooms) *
+                100
+            )
+
+          : 0;
+
+      setAnalytics({
+
+        bestHostel,
+
+        bestOccupancy:
+          Math.round(bestOccupancy),
+
+        highestRevenue,
+
+        overallOccupancy,
+
+        growth,
+
+      });
+
+    } catch (error) {
+
+      console.error(error);
+
+    }
+
+  };
+
+  fetchAnalytics();
+
+}, []);
+
+
 
 
 useEffect(() => {
@@ -250,19 +419,19 @@ fetchAnalytics();
 
             <h3 className="text-3xl font-bold">
 
-              Campus View Hostel
+              {analytics.bestHostel}
 
             </h3>
 
             <p className="text-gray-500 mt-3">
 
-              95% Occupancy
+              {analytics.bestOccupancy}% Occupancy
 
             </p>
 
             <p className="text-gray-500">
 
-              KSh 40,000 Monthly Revenue
+              KSh {analytics.highestRevenue.toLocaleString()} Total Revenue
 
             </p>
 
@@ -294,13 +463,13 @@ fetchAnalytics();
 
       <p className="mt-3 text-green-600 font-semibold">
 
-        Campus View Hostel
+        {analytics.bestHostel}
 
       </p>
 
       <p className="text-gray-500">
 
-        95% Occupancy
+        {analytics.bestOccupancy}% Occupancy
 
       </p>
 
@@ -320,7 +489,7 @@ fetchAnalytics();
 
       <p className="mt-3 text-green-600 font-semibold">
 
-        KSh 80,000
+        KSh {analytics.highestRevenue.toLocaleString()}
 
       </p>
 
@@ -346,7 +515,7 @@ fetchAnalytics();
 
       <p className="mt-3 text-blue-600 font-semibold">
 
-        +18%
+        {analytics.growth}%
 
       </p>
 
@@ -372,7 +541,7 @@ fetchAnalytics();
 
       <p className="mt-3 text-purple-600 font-semibold">
 
-        92%
+        {analytics.overallOccupancy}%
 
       </p>
 

@@ -1,4 +1,4 @@
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { collection, query, where, getDocs, orderBy, limit } from "firebase/firestore";
 import { auth, db } from "../firebase/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
@@ -20,6 +20,8 @@ const [landlordName, setLandlordName] = useState("Landlord");
 const [hostelCount, setHostelCount] = useState(0);
 const [bookingCount, setBookingCount] = useState(0);
 const [occupancy, setOccupancy] = useState(0);
+const [revenue, setRevenue] = useState(0);
+const [recentBooking, setRecentBooking] = useState(null);
 
 
 
@@ -110,9 +112,23 @@ useEffect(() => {
 
   setHostelCount(snapshot.size);
 
-};
+  let revenue = 0;
 
-fetchHostels();
+  snapshot.forEach((doc) => {
+
+    const hostel = doc.data();
+
+    const occupiedRooms =
+      (hostel.totalRooms || 0) -
+      (hostel.availableRooms || 0);
+
+    revenue += occupiedRooms * (hostel.price || 0);
+
+  });
+
+  setRevenue(revenue);
+
+   };
 
 
   const fetchLandlord = async () => {
@@ -129,7 +145,42 @@ fetchHostels();
 
   };
 
+  const fetchRecentBooking = async () => {
+
+  if (!user) return;
+
+  try {
+
+    const q = query(
+      collection(db, "bookings"),
+      where("landlordId", "==", user.uid),
+      orderBy("bookingDate", "desc"),
+      limit(1)
+    );
+
+    const snapshot = await getDocs(q);
+
+    if (!snapshot.empty) {
+
+      setRecentBooking({
+        id: snapshot.docs[0].id,
+        ...snapshot.docs[0].data(),
+      });
+
+    }
+
+  } catch (error) {
+
+    console.error(error);
+
+  }
+
+};
+
+
+   fetchHostels();
   fetchLandlord();
+  fetchRecentBooking();
 
 }, [user]);
   return (
@@ -223,7 +274,7 @@ fetchHostels();
 
             <h2 className="text-4xl font-bold mt-4">
 
-              KSh 80K
+              KSh {revenue.toLocaleString()}
 
             </h2>
 
@@ -309,46 +360,66 @@ fetchHostels();
 
         </div>
 
-                {/* Recent Booking */}
+            
+{/* Recent Booking */}
 
-        <div className="bg-white rounded-3xl shadow-lg p-8 mt-10">
+<div className="bg-white rounded-3xl shadow-lg p-8 mt-10">
 
-          <h2 className="text-2xl font-bold">
+  <h2 className="text-2xl font-bold">
+    Recent Booking
+  </h2>
 
-            Recent Booking
+  {recentBooking ? (
 
-          </h2>
+    <div className="mt-6">
 
-          <div className="mt-6">
+      <h3 className="text-2xl font-bold">
+        {recentBooking.studentName}
+      </h3>
 
-            <h3 className="text-xl font-semibold">
+      <p className="text-gray-500 mt-2">
+        {recentBooking.hostelName}
+      </p>
 
-              Campus View Hostel
+      <p className="mt-3">
 
-            </h3>
+        <strong>Status:</strong>{" "}
 
-            <p className="text-gray-500 mt-2">
+        <span
+          className={`font-semibold ${
+            recentBooking.status === "Confirmed"
+              ? "text-green-600"
+              : recentBooking.status === "Declined"
+              ? "text-red-600"
+              : "text-yellow-600"
+          }`}
+        >
+          {recentBooking.status}
+        </span>
 
-              Student: Brian Maina
+      </p>
 
-            </p>
+      <p className="text-gray-500 mt-4">
+        📅{" "}
+        {recentBooking.bookingDate
+          ?.toDate()
+          .toLocaleString()}
+      </p>
 
-            <p className="text-gray-500">
+    </div>
 
-              Viewing Tomorrow • 10:00 AM
+  ) : (
 
-            </p>
+    <p className="text-gray-500 mt-6">
+      No bookings yet.
+    </p>
 
-            <span className="inline-block mt-5 bg-green-100 text-green-700 px-5 py-2 rounded-full">
+  )}
 
-              Confirmed
-
-            </span>
-
-          </div>
-
-        </div>
-
+</div>
+      
+ 
+        
       </div>
 
     </div>
