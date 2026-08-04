@@ -9,6 +9,8 @@ import { logoutUser } from "../services/auth";
 const Profile = () => {
 
   const navigate = useNavigate();
+  const [profileImage, setProfileImage] = useState(null);
+  const [uploading, setUploading] = useState(false);
   const [student, setStudent] = useState(null);
   const [editing, setEditing] = useState(false);
 
@@ -18,6 +20,38 @@ const [formData, setFormData] = useState({
   university: "",
   course: "",
 });
+
+
+
+
+
+const uploadImageToCloudinary = async (image) => {
+
+  const formData = new FormData();
+
+  formData.append("file", image);
+
+  formData.append("upload_preset", "hostelhub_uploads");
+
+  const response = await fetch(
+    "https://api.cloudinary.com/v1_1/wfvj46ip/image/upload",
+    {
+      method: "POST",
+      body: formData,
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+
+    throw new Error(data.error?.message || "Upload failed");
+
+  }
+
+  return data.secure_url;
+
+};
 
 
 
@@ -112,6 +146,53 @@ const handleSave = async () => {
 
 };
 
+//upload function 
+
+const handleProfileImage = async (e) => {
+
+  const file = e.target.files[0];
+
+  if (!file) return;
+
+  try {
+
+    setUploading(true);
+
+    const imageUrl = await uploadImageToCloudinary(file);
+
+    const userRef = doc(db, "users", auth.currentUser.uid);
+
+    await updateDoc(userRef, {
+
+      profileImage: imageUrl,
+
+    });
+
+    setStudent({
+
+      ...student,
+
+      profileImage: imageUrl,
+
+    });
+
+    setProfileImage(imageUrl);
+
+    alert("Profile picture updated successfully!");
+
+  } catch (error) {
+
+    console.error(error);
+
+    alert("Failed to upload image.");
+
+  } finally {
+
+    setUploading(false);
+
+  }
+
+};
 
   return (
     <div className="min-h-screen bg-slate-100">
@@ -128,11 +209,31 @@ const handleSave = async () => {
 
           <div className="flex flex-col items-center">
 
-            <img
-              src="https://i.pravatar.cc/200"
-              alt="Profile"
-              className="w-36 h-36 rounded-full border-4 border-white shadow-lg"
-            />
+           <img
+  src={
+    profileImage ||
+    student?.profileImage ||
+    "https://i.pravatar.cc/200"
+  }
+  alt="Profile"
+  className="w-36 h-36 rounded-full border-4 border-white shadow-lg object-cover"
+/>
+
+
+<input
+  type="file"
+  accept="image/*"
+  className="hidden"
+  id="profileImage"
+  onChange={handleProfileImage}
+/>
+
+<label
+  htmlFor="profileImage"
+  className="mt-4 cursor-pointer bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-xl transition"
+>
+  {uploading ? "Uploading..." : "Change Profile Picture"}
+</label>
 
 
 

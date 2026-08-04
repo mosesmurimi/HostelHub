@@ -15,6 +15,8 @@ import Universities from "../components/home/Universities";
 import Footer from "../components/home/Footer";
 
 const Home = () => {
+  const [activeFilter, setActiveFilter] = useState("All");
+
   const [searchTerm, setSearchTerm] = useState("");
 
   const [hostels, setHostels] = useState([]);
@@ -55,16 +57,54 @@ const Home = () => {
     fetchHostels();
   }, []);
 
-  const filteredHostels = hostels.filter((hostel) =>
-    hostel.name
-      ?.toLowerCase()
-      .includes(searchTerm.toLowerCase()) ||
+ const filteredHostels = hostels.filter((hostel) => {
 
-    hostel.location
-      ?.toLowerCase()
-      .includes(searchTerm.toLowerCase())
-  );
+  // Search filter
+  const matchesSearch =
+    hostel.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    hostel.location?.toLowerCase().includes(searchTerm.toLowerCase());
 
+  // Category filter
+  let matchesCategory = true;
+
+  if (activeFilter === "Boys") {
+    matchesCategory = hostel.gender === "Boys";
+  }
+
+  if (activeFilter === "Girls") {
+    matchesCategory = hostel.gender === "Girls";
+  }
+
+  if (activeFilter === "Premium") {
+    matchesCategory = hostel.price >= 7000;
+  }
+
+  if (activeFilter === "Affordable") {
+    matchesCategory = hostel.price < 7000;
+  }
+
+  return matchesSearch && matchesCategory;
+
+});
+
+
+const trendingHostels = [...hostels]
+  .sort((a, b) => {
+
+    const scoreA =
+      (a.views || 0) +
+      ((a.savedCount || 0) * 3) +
+      ((a.bookingCount || 0) * 5);
+
+    const scoreB =
+      (b.views || 0) +
+      ((b.savedCount || 0) * 3) +
+      ((b.bookingCount || 0) * 5);
+
+    return scoreB - scoreA;
+
+  })
+  .slice(0, 6);
   return (
     <div className="bg-slate-100 min-h-screen">
 
@@ -77,9 +117,12 @@ const Home = () => {
         setSearchTerm={setSearchTerm}
       />
 
-      <CategoryFilter />
+      <CategoryFilter
+       activeFilter={activeFilter}
+       setActiveFilter={setActiveFilter}
+      />
 
-      <PopularSection />
+      <PopularSection  hostels={trendingHostels} />
 
       <div className="max-w-7xl mx-auto px-6 mt-10 mb-6 flex justify-between items-center">
 

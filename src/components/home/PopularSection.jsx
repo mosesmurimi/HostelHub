@@ -1,14 +1,13 @@
-import hostels from "../../constants/hostels";
-import PopularCard from "./PopularCard";
+import HostelCard from "./HostelCard";
 
-const PopularSection = () => {
+const PopularSection = ({ hostels }) => {
   return (
     <section className="mt-16">
 
       <div className="flex justify-between items-center px-6 mb-6">
 
         <h2 className="text-3xl font-bold">
-           Popular Near You
+           Trending Hostels
         </h2>
 
         <button className="text-green-600 font-semibold">
@@ -21,12 +20,14 @@ const PopularSection = () => {
 
         {hostels.map((hostel) => (
 
-          <PopularCard
-            key={hostel.id}
-            hostel={hostel}
-          />
+  <div
+    key={hostel.id}
+    className="min-w-85 max-w-85 shrink-0"
+  >
+    <HostelCard hostel={hostel} />
+  </div>
 
-        ))}
+))}
 
       </div>
 

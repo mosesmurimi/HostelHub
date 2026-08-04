@@ -22,6 +22,7 @@ const EditHostel = () => {
   const [location, setLocation] = useState("");
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
+  const [gender, setGender] = useState("Boys");
 
   useEffect(() => {
 
@@ -71,6 +72,10 @@ const EditHostel = () => {
           hostelData.description || ""
         );
 
+        setGender(
+         hostelData.gender || "Boys"
+        );
+
       } catch (error) {
 
         console.error(
@@ -114,6 +119,7 @@ const EditHostel = () => {
         {
           name,
           university,
+          gender,
           location,
           price: Number(price),
           description,
@@ -255,6 +261,33 @@ const EditHostel = () => {
               </select>
 
             </div>
+
+
+            <div>
+
+  <label className="font-semibold">
+    Hostel Category
+  </label>
+
+  <select
+    value={gender}
+    onChange={(e) => setGender(e.target.value)}
+    className="w-full mt-3 border rounded-xl p-4"
+  >
+
+    <option value="Boys">
+      Boys Hostel
+    </option>
+
+    <option value="Girls">
+      Girls Hostel
+    </option>
+
+  </select>
+
+</div>
+
+
 
 
             {/* Location */}

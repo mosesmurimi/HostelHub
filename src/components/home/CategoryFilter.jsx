@@ -14,19 +14,28 @@ const categories = [
   { icon: <FaMoneyBillWave />, name: "Affordable" },
 ];
 
-const CategoryFilter = () => {
+const CategoryFilter = ({ activeFilter, setActiveFilter }) => {
   return (
     <section className="px-6 mt-8">
       <div className="flex gap-4 overflow-x-auto scrollbar-hide">
 
         {categories.map((category) => (
           <button
-            key={category.name}
-            className="flex items-center gap-2 whitespace-nowrap bg-white px-5 py-3 rounded-full shadow hover:bg-green-600 hover:text-white transition"
-          >
-            {category.icon}
-            {category.name}
-          </button>
+  key={category.name}
+  onClick={() => setActiveFilter(category.name)}
+  className={`flex items-center gap-2 whitespace-nowrap px-5 py-3 rounded-full shadow transition
+
+    ${
+      activeFilter === category.name
+        ? "bg-green-600 text-white"
+        : "bg-white hover:bg-green-600 hover:text-white"
+    }
+
+  `}
+>
+  {category.icon}
+  {category.name}
+</button>
         ))}
 
       </div>

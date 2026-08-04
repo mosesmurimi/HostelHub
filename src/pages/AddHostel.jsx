@@ -31,6 +31,7 @@ const AddHostel = () => {
 
   const [images, setImages] = useState([]);
   const [roomType, setRoomType] = useState("");
+  const [gender, setGender] = useState("Boys");
   const [totalRooms, setTotalRooms] = useState("");
   const [availableRooms,setAvailableRooms]=useState("");
   const [name, setName] = useState("");
@@ -111,6 +112,8 @@ await addDoc(collection(db, "hostels"), {
   price: Number(price),
   description,
   images: imageUrls,
+  gender, 
+
 
   amenities: Object.keys(amenities).filter(
     (amenity) => amenities[amenity]
@@ -131,12 +134,16 @@ occupiedRooms:
 Number(totalRooms)-Number(availableRooms),
 
 status:
-Number(availableRooms)>0
-?"Available"
-:"Fully Booked",
+Number(availableRooms) > 0
+  ? "Available"
+  : "Fully Booked",
 
+// Analytics
+views: 0,
+savedCount: 0,
+bookingCount: 0,
 
-  createdAt: serverTimestamp(),
+createdAt: serverTimestamp(),
 
 });
 
@@ -150,6 +157,7 @@ Number(availableRooms)>0
       setLocation("");
       setPrice("");
       setRoomType("");
+      setGender("Boys");
 
       setTotalRooms("");
 
@@ -312,6 +320,22 @@ Number(availableRooms)>0
 
   </select>
 
+</div>
+
+
+<div>
+  <label className="block font-semibold mb-2">
+    Hostel Category
+  </label>
+
+  <select
+    value={gender}
+    onChange={(e) => setGender(e.target.value)}
+    className="w-full border rounded-xl p-3"
+  >
+    <option value="Boys">Boys Hostel</option>
+    <option value="Girls">Girls Hostel</option>
+  </select>
 </div>
 
 

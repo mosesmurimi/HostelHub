@@ -25,6 +25,8 @@ import {
   serverTimestamp,
   deleteDoc,
   setDoc,
+  updateDoc,
+  increment,
  } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 import { useParams } from "react-router-dom";
@@ -104,6 +106,10 @@ useEffect(() => {
             hostelData.image || ""
           );
 
+          await updateDoc(hostelRef, {
+          views: increment(1),
+          });
+
         }
 
       } catch (error) {
@@ -161,11 +167,8 @@ useEffect(() => {
 const toggleSaved = async () => {
 
   if (!auth.currentUser) {
-
     alert("Please login first.");
-
     return;
-
   }
 
   const favoriteRef = doc(
@@ -174,22 +177,36 @@ const toggleSaved = async () => {
     `${auth.currentUser.uid}_${hostel.id}`
   );
 
+  const hostelRef = doc(
+    db,
+    "hostels",
+    hostel.id
+  );
+
   if (saved) {
 
+    // Remove favorite
     await deleteDoc(favoriteRef);
+
+    // Decrease save count
+    await updateDoc(hostelRef, {
+      savedCount: increment(-1),
+    });
 
     setSaved(false);
 
   } else {
 
+    // Save favorite
     await setDoc(favoriteRef, {
-
       studentId: auth.currentUser.uid,
-
       hostelId: hostel.id,
-
       savedAt: new Date(),
+    });
 
+    // Increase save count
+    await updateDoc(hostelRef, {
+      savedCount: increment(1),
     });
 
     setSaved(true);
@@ -197,7 +214,6 @@ const toggleSaved = async () => {
   }
 
 };
-
 
 
 
