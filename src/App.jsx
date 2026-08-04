@@ -1,3 +1,4 @@
+import Settings from "./pages/Settings";
 import TestUpload from "./pages/TestUpload";
 import EditHostel from "./pages/EditHostel";
 import RoleProtectedRoute from "./components/RoleProtectedRoute";
@@ -91,6 +92,12 @@ function App() {
   path="/test-upload"
   element={<TestUpload />}
 />
+
+<Route
+  path="/settings"
+  element={<Settings />}
+/>
+
       </Routes>
     </BrowserRouter>
   );

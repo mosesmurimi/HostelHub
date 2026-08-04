@@ -1,4 +1,4 @@
-
+import { FaRegHeart } from "react-icons/fa";
 import {
   FaBed,
   FaDoorOpen,
@@ -23,6 +23,8 @@ import {
   collection,
   addDoc,
   serverTimestamp,
+  deleteDoc,
+  setDoc,
  } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 import { useParams } from "react-router-dom";
@@ -47,6 +49,37 @@ const HostelDetails = () => {
   const [selectedImage, setSelectedImage] = useState("");
 
   const [similarHostels, setSimilarHostels] = useState([]);
+
+  const [saved, setSaved] = useState(false);
+
+
+
+
+
+useEffect(() => {
+
+  const checkSaved = async () => {
+
+    if (!auth.currentUser || !hostel) return;
+
+    const favoriteRef = doc(
+      db,
+      "favorites",
+      `${auth.currentUser.uid}_${hostel.id}`
+    );
+
+    const snap = await getDoc(favoriteRef);
+
+    setSaved(snap.exists());
+
+  };
+
+  checkSaved();
+
+}, [hostel]);
+
+
+
 
   useEffect(() => {
 
@@ -125,6 +158,48 @@ const HostelDetails = () => {
 }, [id]);
 
 
+const toggleSaved = async () => {
+
+  if (!auth.currentUser) {
+
+    alert("Please login first.");
+
+    return;
+
+  }
+
+  const favoriteRef = doc(
+    db,
+    "favorites",
+    `${auth.currentUser.uid}_${hostel.id}`
+  );
+
+  if (saved) {
+
+    await deleteDoc(favoriteRef);
+
+    setSaved(false);
+
+  } else {
+
+    await setDoc(favoriteRef, {
+
+      studentId: auth.currentUser.uid,
+
+      hostelId: hostel.id,
+
+      savedAt: new Date(),
+
+    });
+
+    setSaved(true);
+
+  }
+
+};
+
+
+
 
 const handleBooking = async () => {
 
@@ -156,6 +231,8 @@ const handleBooking = async () => {
 
     console.log("🚀 About to save booking");
 
+
+
     await addDoc(collection(db, "bookings"), {
 
       studentId: auth.currentUser.uid,
@@ -180,7 +257,7 @@ const handleBooking = async () => {
 
     });
 
-    console.log("🎉 Booking saved successfully");
+    
 
     alert("Booking submitted successfully!");
 
@@ -378,11 +455,20 @@ const handleBooking = async () => {
 
  <div className="flex justify-end mt-6">
 
-<button className="flex items-center gap-2 border-2 border-green-600 text-green-600 hover:bg-green-600 hover:text-white transition px-6 py-3 rounded-xl">
+<button
+  onClick={toggleSaved}
+  className="flex items-center gap-2 border-2 border-green-600 text-green-600 hover:bg-green-600 hover:text-white transition px-6 py-3 rounded-xl"
+>
 
-<FaHeart className="text-red-500 hover:scale-105"/>
+  {saved ? (
+    <FaHeart className="text-red-500 text-xl" />
+  ) : (
+    <FaRegHeart className="text-red-500 text-xl" />
+  )}
 
-Save to Favorites
+  <span>
+    {saved ? "Saved" : "Save Hostel"}
+  </span>
 
 </button>
 

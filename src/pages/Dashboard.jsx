@@ -1,4 +1,13 @@
 import {
+  collection,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore";
+import { useEffect, useState } from "react";
+import { auth, db } from "../firebase/firebase";
+import { doc, getDoc } from "firebase/firestore";
+import {
   FiSearch,
   FiHeart,
   FiCalendar,
@@ -9,6 +18,142 @@ import { Link } from "react-router-dom";
 import HostelCard from "../components/home/HostelCard";
 import hostels from "../constants/hostels";
 const Dashboard = () => {
+
+
+  const user = auth.currentUser;
+
+const [studentName, setStudentName] = useState("Student");
+const [savedCount, setSavedCount] = useState(0);
+const [bookingCount, setBookingCount] = useState(0);
+const [approvedCount, setApprovedCount] = useState(0);
+const [pendingCount, setPendingCount] = useState(0);
+
+
+
+
+useEffect(() => {
+
+  const fetchStudent = async () => {
+
+    if (!user) return;
+
+    try {
+
+      const docRef = doc(db, "users", user.uid);
+
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+
+        setStudentName(docSnap.data().name);
+
+      }
+
+    } catch (error) {
+
+      console.error(error);
+
+    }
+
+  };
+
+  fetchStudent();
+
+}, [user]);
+
+
+
+useEffect(() => {
+
+  const fetchSavedHostels = async () => {
+
+    if (!user) return;
+
+    try {
+
+      const q = query(
+        collection(db, "favorites"),
+        where("studentId", "==", user.uid)
+      );
+
+      const snapshot = await getDocs(q);
+
+      setSavedCount(snapshot.size);
+
+      console.log("Saved Hostels:", snapshot.size);
+
+    } catch (error) {
+
+      console.error(error);
+
+    }
+
+  };
+
+  fetchSavedHostels();
+
+}, [user]);
+
+
+
+useEffect(() => {
+
+  const fetchBookings = async () => {
+
+  if (!user) return;
+
+  try {
+
+    const q = query(
+      collection(db, "bookings"),
+      where("studentId", "==", user.uid)
+    );
+
+    const snapshot = await getDocs(q);
+
+    setBookingCount(snapshot.size);
+
+    let approved = 0;
+    let pending = 0;
+
+    snapshot.forEach((doc) => {
+
+      const booking = doc.data();
+
+      if (booking.status === "Confirmed") {
+
+        approved++;
+
+      }
+
+      if (booking.status === "Pending") {
+
+        pending++;
+
+      }
+
+    });
+
+    setApprovedCount(approved);
+    setPendingCount(pending);
+
+    console.log("Student Bookings:", snapshot.size);
+
+  } catch (error) {
+
+    console.error(error);
+
+  }
+
+};
+
+  fetchBookings();
+
+}, [user]);
+
+
+
+
   return (
     <div className="min-h-screen bg-slate-100">
 
@@ -16,7 +161,7 @@ const Dashboard = () => {
 
        <h1 className="text-4xl font-bold">
 
-         Welcome back, Moses 👋
+         Welcome back, {studentName}
 
       </h1>
 
@@ -39,7 +184,7 @@ const Dashboard = () => {
 
               <p className="text-4xl font-bold mt-3 text-green-600">
 
-                12
+                {savedCount}
 
               </p>
 
@@ -55,7 +200,7 @@ const Dashboard = () => {
 
               <p className="text-4xl font-bold mt-3 text-green-600">
 
-                  12
+                   {bookingCount}
 
               </p>
 
@@ -64,36 +209,35 @@ const Dashboard = () => {
       
       <div className="bg-white rounded-3xl p-6 shadow-lg">
 
-          <h2 className="text-gray-500">
+  <h2 className="text-gray-500">
 
-             Messages
+    Approved
 
-          </h2>
+  </h2>
 
-             <p className="text-4xl font-bold mt-3 text-green-600">
+  <p className="text-4xl font-bold mt-3 text-green-600">
 
-                 12
+    {approvedCount}
 
-            </p>
+  </p>
 
-      </div> 
+</div>
 
+<div className="bg-white rounded-3xl p-6 shadow-lg">
 
-      <div className="bg-white rounded-3xl p-6 shadow-lg">
+  <h2 className="text-gray-500">
 
-           <h2 className="text-gray-500">
+    Pending
 
-              Notifications
+  </h2>
 
-           </h2>
+  <p className="text-4xl font-bold mt-3 text-orange-500">
 
-             <p className="text-4xl font-bold mt-3 text-green-600">
+    {pendingCount}
 
-                 12
+  </p>
 
-             </p>
-
-      </div>
+</div>
       </div>
 
 
