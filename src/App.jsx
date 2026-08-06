@@ -1,3 +1,4 @@
+import LandlordListings from "./pages/LandlordListings";
 import Settings from "./pages/Settings";
 import TestUpload from "./pages/TestUpload";
 import EditHostel from "./pages/EditHostel";
@@ -97,6 +98,13 @@ function App() {
   path="/settings"
   element={<Settings />}
 />
+
+<Route
+  path="/landlord/:ownerId"
+  element={<LandlordListings />}
+/>
+
+
 
       </Routes>
     </BrowserRouter>

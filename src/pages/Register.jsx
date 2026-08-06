@@ -1,3 +1,4 @@
+import { useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase/firebase";
@@ -5,10 +6,11 @@ import { registerUser } from "../services/auth";
 import { useState } from "react";
 
 const Register = () => {
+  const location = useLocation();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("student");
+  const [role, setRole] = useState( location.state?.role ||"student");
 
   const handleSubmit = async (e) => {
 

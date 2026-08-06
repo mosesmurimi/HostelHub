@@ -31,7 +31,7 @@ const AddHostel = () => {
 
   const [images, setImages] = useState([]);
   const [roomType, setRoomType] = useState("");
-  const [gender, setGender] = useState("Boys");
+  const [gender, setGender] = useState("Both");
   const [totalRooms, setTotalRooms] = useState("");
   const [availableRooms,setAvailableRooms]=useState("");
   const [name, setName] = useState("");
@@ -39,6 +39,7 @@ const AddHostel = () => {
   const [location, setLocation] = useState("");
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
+  const [googleMapsUrl, setGoogleMapsUrl] = useState("");
 
   const [amenities, setAmenities] = useState({
     wifi: false,
@@ -109,6 +110,7 @@ await addDoc(collection(db, "hostels"), {
   name,
   university,
   location,
+  googleMapsUrl,
   price: Number(price),
   description,
   images: imageUrls,
@@ -157,7 +159,8 @@ createdAt: serverTimestamp(),
       setLocation("");
       setPrice("");
       setRoomType("");
-      setGender("Boys");
+      setGender("Both");
+      setGoogleMapsUrl("");
 
       setTotalRooms("");
 
@@ -276,6 +279,56 @@ createdAt: serverTimestamp(),
 
             </div>
 
+
+            <div className="bg-green-50 border border-green-200 rounded-2xl p-6">
+
+  <h3 className="text-lg font-bold text-green-700">
+
+    Hostel Location
+
+  </h3>
+
+  <p className="text-gray-600 mt-2">
+
+    Help students find your hostel easily.
+
+  </p>
+
+  <ol className="list-decimal ml-6 mt-4 space-y-2 text-gray-700">
+
+    <li>Open Google Maps.</li>
+
+    <li>Search your hostel.</li>
+
+    <li>Tap <strong>Share</strong>.</li>
+
+    <li>Select <strong>Copy Link</strong>.</li>
+
+    <li>Paste the link below.</li>
+
+  </ol>
+
+  <a
+    href="https://maps.google.com"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="inline-block mt-5 bg-green-600 hover:bg-green-700 text-white px-5 py-3 rounded-xl font-semibold"
+  >
+
+     Open Google Maps
+
+  </a>
+
+  <input
+    type="url"
+    value={googleMapsUrl}
+    onChange={(e) => setGoogleMapsUrl(e.target.value)}
+    placeholder="Paste Google Maps link here..."
+    className="w-full mt-5 border rounded-xl p-4"
+  />
+
+</div>
+
             {/* Price */}
 
             <div>
@@ -324,21 +377,40 @@ createdAt: serverTimestamp(),
 
 
 <div>
-  <label className="block font-semibold mb-2">
-    Hostel Category
+
+  <label className="font-semibold">
+
+    Hostel Gender
+
   </label>
 
   <select
     value={gender}
     onChange={(e) => setGender(e.target.value)}
-    className="w-full border rounded-xl p-3"
+    className="w-full mt-3 border rounded-xl p-4"
   >
-    <option value="Boys">Boys Hostel</option>
-    <option value="Girls">Girls Hostel</option>
+
+    <option value="Both">
+
+      Both Boys & Girls
+
+    </option>
+
+    <option value="Boys">
+
+      Boys Only
+
+    </option>
+
+    <option value="Girls">
+
+      Girls Only
+
+    </option>
+
   </select>
+
 </div>
-
-
 
 <div>
 
@@ -531,23 +603,7 @@ The remaining images appear in the gallery.
 
 
 
-            {/* Google Maps - Coming Soon */}
-
-            <div>
-
-              <label className="font-semibold">
-                Google Maps Location
-              </label>
-
-              <div className="bg-gray-200 rounded-2xl h-72 mt-4 flex items-center justify-center">
-
-                <p className="text-gray-500">
-                  Google Maps Integration Coming Soon
-                </p>
-
-              </div>
-
-            </div>
+            
 
             {/* Submit */}
 

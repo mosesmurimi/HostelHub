@@ -22,7 +22,7 @@ const EditHostel = () => {
   const [location, setLocation] = useState("");
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
-  const [gender, setGender] = useState("Boys");
+  const [gender, setGender] = useState("Both");
 
   useEffect(() => {
 
@@ -59,6 +59,8 @@ const EditHostel = () => {
         setUniversity(
           hostelData.university || ""
         );
+
+        setGender(hostelData.gender || "Both");
 
         setLocation(
           hostelData.location || ""
@@ -266,7 +268,9 @@ const EditHostel = () => {
             <div>
 
   <label className="font-semibold">
-    Hostel Category
+
+    Hostel Gender
+
   </label>
 
   <select
@@ -275,18 +279,27 @@ const EditHostel = () => {
     className="w-full mt-3 border rounded-xl p-4"
   >
 
+    <option value="Both">
+
+      Both Boys & Girls
+
+    </option>
+
     <option value="Boys">
-      Boys Hostel
+
+      Boys Only
+
     </option>
 
     <option value="Girls">
-      Girls Hostel
+
+      Girls Only
+
     </option>
 
   </select>
 
 </div>
-
 
 
 

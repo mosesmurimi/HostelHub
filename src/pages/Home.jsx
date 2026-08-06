@@ -15,6 +15,9 @@ import Universities from "../components/home/Universities";
 import Footer from "../components/home/Footer";
 
 const Home = () => {
+
+  const [selectedUniversity, setSelectedUniversity] = useState("");
+
   const [activeFilter, setActiveFilter] = useState("All");
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -68,12 +71,20 @@ const Home = () => {
   let matchesCategory = true;
 
   if (activeFilter === "Boys") {
-    matchesCategory = hostel.gender === "Boys";
-  }
 
-  if (activeFilter === "Girls") {
-    matchesCategory = hostel.gender === "Girls";
-  }
+  matchesCategory =
+    hostel.gender === "Boys" ||
+    hostel.gender === "Both";
+
+}
+
+if (activeFilter === "Girls") {
+
+  matchesCategory =
+    hostel.gender === "Girls" ||
+    hostel.gender === "Both";
+
+}
 
   if (activeFilter === "Premium") {
     matchesCategory = hostel.price >= 7000;
@@ -83,7 +94,12 @@ const Home = () => {
     matchesCategory = hostel.price < 7000;
   }
 
-  return matchesSearch && matchesCategory;
+   // University filter
+  const matchesUniversity =
+    selectedUniversity === "" ||
+    hostel.university === selectedUniversity;
+
+  return matchesSearch && matchesCategory && matchesUniversity;
 
 });
 
@@ -112,10 +128,15 @@ const trendingHostels = [...hostels]
 
       <Hero />
 
+
+      <div id="search">
+
       <SearchBar
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
       />
+
+      </div>
 
       <CategoryFilter
        activeFilter={activeFilter}
@@ -124,7 +145,9 @@ const trendingHostels = [...hostels]
 
       <PopularSection  hostels={trendingHostels} />
 
-      <div className="max-w-7xl mx-auto px-6 mt-10 mb-6 flex justify-between items-center">
+      <div 
+      id="hostels"
+      className="max-w-7xl mx-auto px-6 mt-10 mb-6 flex justify-between items-center">
 
         <h2 className="text-3xl font-bold text-gray-800">
           Featured Hostels
@@ -197,7 +220,14 @@ const trendingHostels = [...hostels]
 
       <LandlordBanner />
 
-      <Universities />
+     <div id="universities">
+
+  <Universities
+    selectedUniversity={selectedUniversity}
+    setSelectedUniversity={setSelectedUniversity}
+  />
+
+</div>
 
       <Footer />
 

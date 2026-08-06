@@ -1,3 +1,4 @@
+import { Link, useNavigate } from "react-router-dom";
 import {
   FaGithub,
   FaLinkedin,
@@ -6,6 +7,26 @@ import {
 } from "react-icons/fa";
 
 const Footer = () => {
+
+
+  const navigate = useNavigate();
+
+
+
+
+
+  const scrollToSection = (id) => {
+
+  document
+    .getElementById(id)
+    ?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+
+};
+
+
   return (
     <footer className="bg-slate-900 text-white mt-20">
 
@@ -38,15 +59,71 @@ const Footer = () => {
 
           <ul className="space-y-3 text-gray-400">
 
-            <li className="hover:text-white cursor-pointer">Home</li>
 
-            <li className="hover:text-white cursor-pointer">Hostels</li>
+  <li>
+    <Link
+      to="/"
+      className="hover:text-white transition"
+    >
+      Home
+    </Link>
+  </li>
 
-            <li className="hover:text-white cursor-pointer">Universities</li>
 
-            <li className="hover:text-white cursor-pointer">Become a Partner</li>
 
-          </ul>
+  <li>
+
+  <button
+    onClick={() => scrollToSection("hostels")}
+    className="hover:text-white transition"
+  >
+
+    Hostels
+
+  </button>
+
+</li>
+
+
+
+  <li>
+
+  <button
+    onClick={() => scrollToSection("universities")}
+    className="hover:text-white transition"
+  >
+
+    Universities
+
+  </button>
+
+</li>
+
+
+
+  <li>
+
+  <button
+    onClick={() =>
+      navigate("/register", {
+        state: {
+          role: "landlord",
+        },
+      })
+    }
+    className="hover:text-white transition"
+  >
+
+    Become a Partner
+
+  </button>
+
+</li>
+
+
+
+
+</ul>
 
         </div>
 
@@ -62,13 +139,16 @@ const Footer = () => {
 
           <div className="space-y-4 text-gray-400">
 
-            <p className="flex gap-3 items-center">
+           <a
+  href="mailto:support@hostelhub.co.ke"
+  className="flex gap-3 items-center hover:text-white transition"
+>
 
-              <FaEnvelope />
+  <FaEnvelope />
 
-              support@hostelhub.co.ke
+  support@hostelhub.co.ke
 
-            </p>
+</a>
 
           </div>
 

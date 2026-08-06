@@ -12,7 +12,10 @@ const universities = [
   "Meru University",
 ];
 
-const Universities = () => {
+const Universities = ({
+  selectedUniversity,
+  setSelectedUniversity,
+}) => {
   return (
     <section className="max-w-7xl mx-auto px-6 py-16">
 
@@ -36,10 +39,24 @@ const Universities = () => {
 
         {universities.map((school) => (
 
+
+
           <button
-            key={school}
-            className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl hover:-translate-y-1 transition duration-300 text-left"
-          >
+  key={school}
+  onClick={() =>
+    setSelectedUniversity(
+      selectedUniversity === school ? "" : school
+    )
+  }
+  className={`rounded-2xl shadow-lg p-6 text-left transition duration-300
+    ${
+      selectedUniversity === school
+        ? "bg-green-600 text-white shadow-xl"
+        : "bg-white hover:shadow-xl hover:-translate-y-1"
+    }`}
+>
+
+
 
             <div className="flex items-center gap-4">
 
@@ -56,12 +73,16 @@ const Universities = () => {
                   {school}
 
                 </h3>
-
-                <p className="text-gray-500">
-
-                  Explore nearby hostels
-
-                </p>
+ 
+ <p
+  className={
+    selectedUniversity === school
+      ? "text-green-100"
+      : "text-gray-500"
+  }
+>
+  Explore nearby hostels
+</p>
 
               </div>
 

@@ -31,6 +31,23 @@ const HostelCard = ({hostel}) => {
               {hostel.name}
             </h2>
 
+
+            <span
+  className={`px-3 py-1 rounded-full text-xs font-semibold ${
+    hostel.gender === "Boys"
+      ? "bg-blue-100 text-blue-700"
+      : hostel.gender === "Girls"
+      ? "bg-pink-100 text-pink-700"
+      : "bg-green-100 text-green-700"
+  }`}
+>
+  {hostel.gender === "Both"
+    ? "👫 Boys & Girls"
+    : hostel.gender}
+</span>
+
+
+
             <div className="flex items-center gap-2 text-gray-500 mt-2">
 
               <FiMapPin />

@@ -1,6 +1,12 @@
+import { useNavigate } from "react-router-dom";
 import { FaBuilding, FaArrowRight } from "react-icons/fa";
 
 const LandlordBanner = () => {
+
+  const navigate = useNavigate();
+
+
+
   return (
     <section className="max-w-7xl mx-auto px-6 py-16">
 
@@ -49,7 +55,13 @@ const LandlordBanner = () => {
 
           <div>
 
-            <button className="bg-white text-green-700 font-bold px-8 py-4 rounded-2xl flex items-center gap-3 hover:scale-105 transition-all duration-300">
+            <button
+             onClick={() =>
+             navigate("/register", {
+             state: { role: "landlord" },
+              })
+              }
+             className="bg-white text-green-700 font-bold px-8 py-4 rounded-2xl flex items-center gap-3 hover:scale-105 transition-all duration-300">
 
               Become a Partner
 
