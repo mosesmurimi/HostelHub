@@ -3,7 +3,7 @@ import { auth, db } from "../../firebase/firebase";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { FaHome } from "react-icons/fa";
-import { FiSearch } from "react-icons/fi";
+
 
 const Navbar = () => {
 
@@ -54,10 +54,7 @@ const Navbar = () => {
 
         <div className="flex items-center gap-5">
 
-          <button className="text-2xl text-gray-700 hover:text-green-500 transition">
-            <FiSearch />
-          </button>
-            
+         
           <Link to="/profile">
 
   <img

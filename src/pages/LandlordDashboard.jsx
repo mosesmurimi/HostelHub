@@ -190,23 +190,31 @@ useEffect(() => {
 
       <div className="bg-green-600 text-white py-12">
 
-        <div className="max-w-7xl mx-auto px-6">
+  <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
 
-          <h1 className="text-5xl font-bold">
+    <div>
 
-            🏢 Landlord Dashboard
+      <h1 className="text-5xl font-bold">
+        🏢 Landlord Dashboard
+      </h1>
 
-          </h1>
+      <p className="mt-4 text-green-100 text-lg">
+        Welcome back, {landlordName}.
+      </p>
 
-          <p className="mt-4 text-green-100 text-lg">
+    </div>
 
-            Welcome back, {landlordName}.
+    <Link
+      to="/"
+      className="bg-white text-green-600 hover:bg-green-100 px-6 py-3 rounded-xl font-semibold transition"
+    >
+      🏠 Browse Hostels
+    </Link>
 
-          </p>
+  </div>
 
-        </div>
-
-      </div>
+</div>
+      
 
       {/* Stats */}
 
