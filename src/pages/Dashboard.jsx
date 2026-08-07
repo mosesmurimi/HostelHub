@@ -16,7 +16,6 @@ import {
 
 import { Link } from "react-router-dom";
 import HostelCard from "../components/home/HostelCard";
-import hostels from "../constants/hostels";
 const Dashboard = () => {
 
 
@@ -27,6 +26,8 @@ const [savedCount, setSavedCount] = useState(0);
 const [bookingCount, setBookingCount] = useState(0);
 const [approvedCount, setApprovedCount] = useState(0);
 const [pendingCount, setPendingCount] = useState(0);
+const [recentHostels, setRecentHostels] = useState([]);
+const [recommendedHostels, setRecommendedHostels] = useState([]);
 
 
 
@@ -150,6 +151,111 @@ useEffect(() => {
   fetchBookings();
 
 }, [user]);
+
+
+useEffect(() => {
+
+  const fetchRecentlyViewed = async () => {
+
+    if (!user) return;
+
+    try {
+
+      const userRef = doc(db, "users", user.uid);
+
+      const userSnap = await getDoc(userRef);
+
+      if (!userSnap.exists()) return;
+
+      const viewedIds =
+        userSnap.data().recentlyViewed || [];
+
+      const hostelsData = [];
+
+      for (const hostelId of viewedIds) {
+
+        const hostelRef = doc(
+          db,
+          "hostels",
+          hostelId
+        );
+
+        const hostelSnap = await getDoc(hostelRef);
+
+        if (hostelSnap.exists()) {
+
+          hostelsData.push({
+            id: hostelSnap.id,
+            ...hostelSnap.data(),
+          });
+
+        }
+
+      }
+
+      setRecentHostels(hostelsData);
+
+    } catch (error) {
+
+      console.error(
+        "Error fetching recently viewed:",
+        error
+      );
+
+    }
+
+  };
+
+  fetchRecentlyViewed();
+
+}, [user]);
+
+
+useEffect(() => {
+
+  const fetchRecommended = async () => {
+
+    try {
+
+      const snapshot = await getDocs(
+        collection(db, "hostels")
+      );
+
+      const allHostels = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      // Newest first
+      allHostels.sort((a, b) => {
+
+        if (!a.createdAt || !b.createdAt) return 0;
+
+        return (
+          b.createdAt.seconds -
+          a.createdAt.seconds
+        );
+
+      });
+
+      setRecommendedHostels(
+        allHostels.slice(0,3)
+      );
+
+    } catch (error) {
+
+      console.error(
+        "Error fetching recommendations:",
+        error
+      );
+
+    }
+
+  };
+
+  fetchRecommended();
+
+}, []);
 
 
 
@@ -304,17 +410,16 @@ Recently Viewed
 
 </h2> 
 
- <div className="grid md:grid-cols-2 gap-8">
+ <div className="grid md:grid-cols-3 gap-8">
 
-    {hostels.slice(0,2).map((hostel) => (
+   {recentHostels.slice(-3).reverse().map((hostel) => (
 
-      <HostelCard
-        key={hostel.id}
-        hostel={hostel}
-      />
+  <HostelCard
+    key={hostel.id}
+    hostel={hostel}
+  />
 
-    ))}
-
+))}
   </div>
 
 </div>
@@ -328,14 +433,14 @@ Recently Viewed
 
   <div className="grid md:grid-cols-3 gap-8">
 
-    {hostels.slice(2,5).map((hostel) => (
+   {recommendedHostels.map((hostel) => (
 
-      <HostelCard
-        key={hostel.id}
-        hostel={hostel}
-      />
+  <HostelCard
+    key={hostel.id}
+    hostel={hostel}
+  />
 
-    ))}
+))}
 
   </div>
 

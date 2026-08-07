@@ -26,6 +26,7 @@ import {
   setDoc,
   updateDoc,
   increment,
+  arrayUnion,
  } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 import { useParams } from "react-router-dom";
@@ -119,9 +120,35 @@ useEffect(() => {
             hostelData.image || ""
           );
 
-          await updateDoc(hostelRef, {
-          views: increment(1),
-          });
+
+
+       
+
+// Save recently viewed hostel
+if (auth.currentUser) {
+
+   console.log("Current User:", auth.currentUser.uid);
+  const userRef = doc(
+    db,
+    "users",
+    auth.currentUser.uid
+  );
+
+   console.log("Updating user document...");
+
+  await updateDoc(userRef, {
+
+    recentlyViewed: arrayUnion(
+      hostelSnapshot.id
+    ),
+
+  });
+
+   console.log("Recently viewed updated successfully!");
+
+}
+
+
 
         }
 
